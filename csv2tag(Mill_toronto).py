@@ -4,7 +4,7 @@ csv_file = system.file.readFileAsString("C:\Users\A7062242\Documents\Project -Me
 data=csv_file.split("\n")   # SPlit string into lines
 for i in range(1,357): #tags from 1 to 204 in excel sheet should be exported
 	 Data=data[i].split(",")
-	 print Data
+	 #print Data
 	 for j in range(12):
 	    # print(Data[j])
 			if Data[9] =='false/true':

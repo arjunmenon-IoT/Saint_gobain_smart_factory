@@ -13,10 +13,10 @@ for i in range(1,49): #tags from 1 to 49 in excel sheet should be exported
 	     else:
 	     	datatype="Float4"
 
-	     if Data[7]=='N/A':
-			name =  Data[6] 
-	     elif Data[7]!='N/A':
-	     	name = Data[6]+ "_" + Data[7]
+	     if Data[8]=='N/A':
+			name =  Data[6]+ "_" + Data[7] 
+	     elif Data[8]!='N/A':
+	     	name = Data[6]+ "_" + Data[7]+ "_" + Data[8] 
 
 	     tags =             {
 	                          "valueSource": "opc",
@@ -45,6 +45,6 @@ for i in range(1,49): #tags from 1 to 49 in excel sheet should be exported
 	                        }
 	 #print(tags)
 	 #print("**************************************************************")	
-	 path =Data[0]+'/'+Data[1]+'/'+Data[2]+'/'+Data[3]+'/'+Data[4]+'/'+Data[5]
+	 path =Data[0].strip()+'/'+Data[1].strip()+'/'+Data[2].strip()+'/'+Data[3].strip()+'/'+Data[4].strip()+'/'+Data[5].strip()
 	 system.tag.configure(path,tags)
 system.gui.messageBox('All the tags in CSV is converted','RESULTS')
