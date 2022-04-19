@@ -71,11 +71,10 @@ def presvapsat(Temp,pressure):
     elif  Temp>230 & Temp<=250:
       presvapsat= 0
  
-    return presvapsat
+    return round(abs(presvapsat),3) # round the value to 3 value
 
 
 
-presvapsat(100,100)
 
 
 

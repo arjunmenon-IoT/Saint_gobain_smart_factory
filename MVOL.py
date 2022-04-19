@@ -3,4 +3,5 @@
 
 def MVOL(Temperature,Humidity,Static_Pressure):
         MVOL = ((1 + Humidity / 1000) * (273.15 / (273.15 + Temperature)) * (101325 + Static_Pressure) / 101325) / (0.7735 + Humidity / 1000 * 1.2436)
-        return abs(MVOL)
+        return abs(round(MVOL,2))  # Round the value to 2 decimal points
+        

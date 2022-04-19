@@ -13,4 +13,3 @@ def Altitude(Value):
         return 9.1 #height  of Sherburn plant from sea level
     
 
-Altitude(5)
