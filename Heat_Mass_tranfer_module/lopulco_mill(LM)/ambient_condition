@@ -1,3 +1,38 @@
+# All th plants in united kingdom and its Heights from sea level is returned
+# This funtion is a input to AmosP() funtion  
+def Altitude(Value):
+    if Value ==1:
+        return 136.11 # height  of Kirby Thore plant from sea level
+    elif Value ==2:
+        return 56.1362 # height  of east leake plant from sea level
+    elif Value ==3:
+        return 53.82 #height  of Barrow plant from sea level
+    elif Value ==4:
+        return 71.66 #height  of robertsbridge plant from sea level
+    elif Value == 5:
+        return 9.1 #height  of Sherburn plant from sea level
+
+
+#Calculates the Atmospheric Pressure in  from Height from Sea level in Pas
+#ArgDesc(1) = Altitude above sea level (m)
+#p = 101325 (1 - 2.25577 10-5 h)5.25588                        
+
+from cmath import exp
+
+def AtmoP(Height):
+    atmoP = 101325 * exp(Height * (-1.21344503058913*pow(10,-4))) - 101325
+    return round(abs(atmoP),1)
+
+
+
+#Calculates the Density in kg/m3 given dry bulb, humidity and pressure & Pressure altered to Pa rather than mmH2O
+#inputs : Dry Bulb Temperature (°C),Humidity (g/kg),Static Pressure (Pa) relative to sea level
+
+def MVOL(Temperature,Humidity,Static_Pressure):
+        MVOL = ((1 + Humidity / 1000) * (273.15 / (273.15 + Temperature)) * (101325 + Static_Pressure) / 101325) / (0.7735 + Humidity / 1000 * 1.2436)
+        return abs(round(MVOL,2))  # Round the value to 2 decimal points
+        
+
 #Calculates the absolute pressure of vapor saturation (mbar) from temperature
 #Temp1 As Double
 #input : Dry Bulb Temperature (°C),Pressure (Pa) relative to sea level
@@ -76,7 +111,21 @@ def presvapsat(Temp,pressure):
 
 
 
+# w=Calculates the Humidity (g/kg)
+# Dry_Bulb _Temperature = "Dry Bulb Temperature (°C)"
+# Wet_Bulb_Temperature = "Wet Bulb Temperature (°C)"
+# sea_pressure = "Pressure (Pa) relative to sea level"
 
+from presvapsat import presvapsat
 
-
+def W(Dry_Bulb_Temperature,Wet_Bulb_Temperature,sea_pressure):
+        temp1 = presvapsat(Wet_Bulb_Temperature,sea_pressure)
+        #print temp1
+        temp2 = temp1-(1013-temp1)*(Dry_Bulb_Temperature-Wet_Bulb_Temperature)/(1503-1.385*Wet_Bulb_Temperature)
+        w=temp2*621.4/(1013-temp2)
+        #print w
+        if w>0:
+        	return round(abs(w))
+        else:
+		return 0
 
