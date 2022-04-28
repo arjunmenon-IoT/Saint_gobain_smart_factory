@@ -20,3 +20,14 @@ def Volumetric_Flow(duct_selection_value,Duct_Dimension_1,Duct_Dimension_2,mean_
 from ambient_condition import W
 def humidity(Dry_Bulb_Temperature,Wet_Bulb_Temperature,sea_pressure):
     return W(Dry_Bulb_Temperature,Wet_Bulb_Temperature,sea_pressure)
+
+
+#dry Air mass Flow = f(humidity,total mass flow)
+def Dry_air_mass_flow(Humidity,total_mass_flow):
+      return round((1/(1+(Humidity*.001)))*total_mass_flow,3)
+
+#Water Mass flow =F(Humidity,Total Mass Flow)
+def water_mass_flow(Humidity,total_mass_flow):
+    return round(((Humidity*.001)/(1+(Humidity*.001)))*total_mass_flow,3)
+    
+ 
