@@ -30,4 +30,9 @@ def Dry_air_mass_flow(Humidity,total_mass_flow):
 def water_mass_flow(Humidity,total_mass_flow):
     return round(((Humidity*.001)/(1+(Humidity*.001)))*total_mass_flow,3)
     
- 
+#Specific Heat Capacity =F(TAB Status,Dry Bulb Temperature,Dry Mass Flow,Total Mass Flow,Water MAss Flow, Energy Load)
+def specific_heat_capacity(tab_status,dry_bulb_temp,dry_mass_flow,total_mass_flow,water_mass_flow,energy_load):
+    if tab_status=="True":
+       return round( ( ( ((0.0000005*pow(dry_bulb_temp,2)) + (-0.000007*dry_bulb_temp) + 1.0053)*(dry_mass_flow/total_mass_flow) ) + ( ((0.0000008*pow(dry_bulb_temp,2)) + (0.0002*dry_bulb_temp) + 1.8572)*(water_mass_flow/total_mass_flow)  )),3)
+    else:
+       return round(  (energy_load-(2257*water_mass_flow))/(total_mass_flow*dry_bulb_temp),3 )
