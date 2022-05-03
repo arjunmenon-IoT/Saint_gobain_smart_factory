@@ -2,7 +2,7 @@
 csv_file = system.file.readFileAsString("C:\Users\A7062242\Documents\Project -Metricks\CSV_toronto\\Mill.csv") #The file is converted into string
 #event.source.parent.getComponent('Label').text=folder8path[0]
 data=csv_file.split("\n")   # SPlit string into lines
-for i in range(1,364): #tags from 1 to 204 in excel sheet should be exported
+for i in range(1,372): #tags from 1 to 204 in excel sheet should be exported
 	 Data=data[i].split(",")
 	 #print Data
 	 for j in range(12):
@@ -25,7 +25,7 @@ for i in range(1,364): #tags from 1 to 204 in excel sheet should be exported
 	                          "historyMaxAge": 5,
 	                          "opcItemPath": "",
 	                          "historicalDeadband": 0.01,
-	                          "historicalDeadbandStyle": "Auto",
+	                          "historicalDeadbandStyle": "Discrete",
 	                          "tagGroup": "1sec",
 	                          "historyTagGroup": "1sec",
 	                          "enabled":True,

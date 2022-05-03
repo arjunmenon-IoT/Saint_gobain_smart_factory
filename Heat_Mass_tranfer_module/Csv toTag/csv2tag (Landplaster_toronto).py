@@ -24,7 +24,7 @@ for i in range(1,49): #tags from 1 to 49 in excel sheet should be exported
 	                          "historyMaxAge": 5,
 	                          "opcItemPath": "",
 	                          "historicalDeadband": 0.01,
-	                          "historicalDeadbandStyle": "Auto",
+	                          "historicalDeadbandStyle": "Discrete",
 	                          "tagGroup": "1sec",
 	                          "historyTagGroup": "1sec",
 	                          "enabled":True,
