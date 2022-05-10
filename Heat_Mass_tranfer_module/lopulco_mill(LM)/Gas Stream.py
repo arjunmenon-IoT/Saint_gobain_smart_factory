@@ -73,3 +73,9 @@ def co2_generated(moles_of_gas_combusted):
 def o2_depleted(moles_of_gas_combusted):
     return (moles_of_gas_combusted*(2*(16*2)))/1000/3600
 
+#Emission
+# F (Energy output)
+
+def emission(energy_output):
+    return (energy_output*1000/3600)*0.18352
+
