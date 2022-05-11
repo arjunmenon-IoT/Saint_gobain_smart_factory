@@ -105,12 +105,3 @@ def calcination_products_flow_GR(Gypsum_Content_RF,Gypsum_Mass_Flow_RF,Solids_Ma
     else:
         return 0
 
-#Calcination Products Flow -GR
-
-Solids_Mass_Flow_GR =
-Solids_Mass_Flow_RF = 
-AII_Content_GR =
-AIII_Content_GR = 
-Hemihydrate_Content_GR =
-
-=HeatMass.LM.Rock.calcination_products_flow_GR(Gypsum_Content_RF,Gypsum_Mass_Flow_RF,Solids_Mass_Flow_GR,Solids_Mass_Flow_RF,AII_Content_GR,AIII_Content_GR,Hemihydrate_Content_GR)
