@@ -105,3 +105,78 @@ def calcination_products_flow_GR(Gypsum_Content_RF,Gypsum_Mass_Flow_RF,Solids_Ma
     else:
         return 0
 
+#Calcination Water-GR
+
+def calcination_water(Gypsum_Content_RF,Gypsum_Mass_Flow_RF,Solids_Mass_Flow_GR,Solids_Mass_Flow_RF,AII_Content_GR,AIII_Content_GR,Hemihydrate_Content_GR):
+    if (Gypsum_Content_RF != 0):
+
+
+        X11 = (Hemihydrate_Content_GR/100)
+        X12 = (AIII_Content_GR/100)
+        X13 = (AII_Content_GR/100)
+        W30 = Solids_Mass_Flow_RF
+        X30 = Solids_Mass_Flow_GR
+        W32 = Gypsum_Mass_Flow_RF
+        W10 = Gypsum_Content_RF/100
+
+        AA11 = (X11*(172/145))*(X30/W30)
+        AA12 = (X12*(172/136))*(X30/W30)
+        AA13 = (X13*(172/136))*(X30/W30)
+
+
+        AB11 = (AA11/W10)*W32
+        AB12 = (AA12/W10)*W32
+        AB13 = (AA13/W10)*W32
+
+        AD11 = AB11*(27/172)
+        AD12 = AB12*(36/172)
+        AD13 = AB13*(36/172)
+
+        return AD11+AD12+AD13
+    else:
+        return 0
+
+
+
+#Energy Load (Solids) -GR
+
+def Energy_Load_Solids_GR(selected_method,Gypsum_Mass_Flow_GR,Temperature_GR,Solids_Mass_Flow_GR,Hemihydrate_Content_GR,AIII_Content_GR,AII_Content_GR,Solids_Mass_Flow_RF,Gypsum_Mass_Flow_RF,Gypsum_Content_RF):
+    if(selected_method == True):
+
+
+        X11 = (Hemihydrate_Content_GR/100)
+        X12 = (AIII_Content_GR/100)
+        X13 = (AII_Content_GR/100)
+        W30 = Solids_Mass_Flow_RF
+        X30 = Solids_Mass_Flow_GR
+        W32 = Gypsum_Mass_Flow_RF
+        W10 = Gypsum_Content_RF/100
+
+        AA11 = (X11*(172/145))*(X30/W30)
+        AA12 = (X12*(172/136))*(X30/W30)
+        AA13 = (X13*(172/136))*(X30/W30)
+
+
+        AB11 = (AA11/W10)*W32
+        AB12 = (AA12/W10)*W32
+        AB13 = (AA13/W10)*W32
+
+
+        AC11 = (AB11*(145/172))
+        AC12 = (AB12*(136/172))
+        AC13 = (AB13*(136/172))
+
+        AE11 = (((AC11*1000/3600)*1000/145)*4.1)*4.184
+        AE12 = (((AC12*1000/3600)*1000/136)*6.99)*4.184
+        AE13 = (((AC13*1000/3600)*1000/136)*3.99)*4.184
+
+
+        return ((((Gypsum_Mass_Flow_GR*(1000000/3600)/172)*(CPG(Temperature_GR))*Temperature_GR)+((AC11*(1000000/3600)/145)*(CPG(Temperature_GR))*Temperature_GR)+(((AC12+AC13)*(1000000/3600)/136)*(CPG(Temperature_GR))*Temperature_GR))/1000)+AE11+AE12+AE13
+    else :
+        return (((Solids_Mass_Flow_GR*(1000000/3600)/172)*(CPG(Temperature_GR))*Temperature_GR)/1000)+AE11+AE12+AE13
+
+
+#Energy Load (Water) -GR
+def Energy_Load_water_GR (Free_Moisture_GR,Free_Moisture_RF,Temperature_GR,Free_Water_Mass_Flow_GR):
+   return (((Free_Water_Mass_Flow_GR*(1000000/3600))*4.186*Temperature_GR)/1000)*(Free_Moisture_GR/Free_Moisture_RF)
+
