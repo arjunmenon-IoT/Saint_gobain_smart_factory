@@ -1,5 +1,8 @@
 #Total Mass Flow
 # F(Flow Measurement Method	, Rock Feed ,Total Rock Usage,Time Difference)
+from ast import If
+
+
 def total_mass_flow(flow_measurement_method,rock_feed,total_rock_usage,time_difference):
     if (flow_measurement_method==1):
         return rock_feed
@@ -56,8 +59,58 @@ def impurities_content(impurities_flow,solids_mass_flow):
 #Total Mass Flow- Ground Rock
 # F(Solids Mass Flow ,Free Moisture)
 def total_mass_flow_GR(solids_mass_flow,free_moisture):
-    if (solids_mass_flow!=0 and free_moisture!=0):
-        return solids_mass_flow/(1-free_moisture)
+    free_moisture=free_moisture/100
+    return solids_mass_flow/(1-free_moisture)
+
+
+#Gypsum Mass Flow- GR
+
+def gypsum_mass_flow_GR( Gypsum_Mass_Flow_RF,Hemihydrate_Content_GR,Solids_Mass_Flow_GR,AIII_Content_GR,AII_Content_GR,Solids_Mass_Flow_RF,Gypsum_Content_RF):
+    if (Gypsum_Content_RF!=0 and Gypsum_Mass_Flow_RF!=0 ):
+        AB11=((((Hemihydrate_Content_GR/100)*(172/145))*(Solids_Mass_Flow_GR/Solids_Mass_Flow_RF))/(Gypsum_Content_RF/100))*(Gypsum_Mass_Flow_RF/100)
+        AB12=((((AIII_Content_GR/100)*(172/136))*(Solids_Mass_Flow_GR/Solids_Mass_Flow_RF))/(Gypsum_Content_RF/100))*(Gypsum_Mass_Flow_RF/100)
+        AB13=((((AII_Content_GR/100)*(172/136))*(Solids_Mass_Flow_GR/Solids_Mass_Flow_RF))/(Gypsum_Content_RF/100))*(Gypsum_Mass_Flow_RF/100)
+        return Gypsum_Mass_Flow_RF - (AB11+AB12+AB13)
     else:
         return 0
 
+#Calcination Products Flow -GR
+
+def calcination_products_flow_GR(Gypsum_Content_RF,Gypsum_Mass_Flow_RF,Solids_Mass_Flow_GR,Solids_Mass_Flow_RF,AII_Content_GR,AIII_Content_GR,Hemihydrate_Content_GR):
+    if (Gypsum_Content_RF != 0):
+    
+        X11 = (Hemihydrate_Content_GR/100)
+        X12 = (AIII_Content_GR/100)
+        X13 = (AII_Content_GR/100)
+        W30 = Solids_Mass_Flow_RF
+        X30 = Solids_Mass_Flow_GR
+        W32 = Gypsum_Mass_Flow_RF
+        W10 = Gypsum_Content_RF/100
+
+        AA11 = (X11*(172/145))*(X30/W30)
+        AA12 = (X12*(172/136))*(X30/W30)
+        AA13 = (X13*(172/136))*(X30/W30)
+
+
+        AB11 = (AA11/W10)*W32
+        AB12 = (AA12/W10)*W32
+        AB13 = (AA13/W10)*W32
+
+
+        AC11 = (AB11*(145/172))
+        AC12 = (AB12*(136/172))
+        AC13 = (AB13*(136/172))
+
+        return AC11+AC12+AC13
+    else:
+        return 0
+
+#Calcination Products Flow -GR
+
+Solids_Mass_Flow_GR =
+Solids_Mass_Flow_RF = 
+AII_Content_GR =
+AIII_Content_GR = 
+Hemihydrate_Content_GR =
+
+=HeatMass.LM.Rock.calcination_products_flow_GR(Gypsum_Content_RF,Gypsum_Mass_Flow_RF,Solids_Mass_Flow_GR,Solids_Mass_Flow_RF,AII_Content_GR,AIII_Content_GR,Hemihydrate_Content_GR)
