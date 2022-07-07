@@ -12,7 +12,6 @@
 #HH = tag8
 #AIII = tag9
 #AII = tag10
-#stucco_flow =  tag6
 
 
 def Wet_gypsum_flow(HH,AIII,AII,Moisture,stucco_flow,gypsum_Moisture):
