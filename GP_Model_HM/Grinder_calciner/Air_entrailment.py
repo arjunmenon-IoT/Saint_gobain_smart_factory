@@ -19,4 +19,4 @@ volume_flow = lambda air_ingress_mill,humidity_ambient,density_air_entrainment: 
 
 energy_flow = lambda temp_ambient , humidity_ambient, air_ingress_mill: round( CS(temp_ambient,humidity_ambient)*air_ingress_mill ,1)
 
-#print(energy_flow(32,7.6,1.50))
+print(energy_flow(32,7.6,1.50))
