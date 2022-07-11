@@ -1,40 +1,49 @@
+
 {
-    u'radarStation':'KDAX',
-    u'fireWeatherZone':'https://api.weather.gov/zones/fire/CAZ217',
-    u'@type':'wx:Point',
-    u'forecastZone':'https://api.weather.gov/zones/forecast/CAZ017',
-    u'county':'https://api.weather.gov/zones/county/CAC067',
-    u'timeZone':'America/Los_Angeles',
-    u'forecast':'https://api.weather.gov/gridpoints/STO/51,
-    68/forecast', u'cwa':'STO',
-    u'relativeLocation':{
-    u'type':'Feature',
-    u'geometry':{
-    u'coordinates':[
-    -121.147656,
-    38.6759569
-    ],
-    u'type':'Point'
-    },
-    u'properties':{
-    u'distance':{
-    u'unitCode':'wmoUnit:m',
-    u'value':4485.91884608
-    },
-    u'city':'Folsom',
-    u'bearing':{
-    u'unitCode':'wmoUnit:degree_(angle)',
-    u'value':234
-    },
-    u'state':'CA'
-    }
-    },
-    u'forecastHourly':'https://api.weather.gov/gridpoints/STO/51,
-    68/forecast/hourly', u'observationStations':'https://api.weather.gov/gridpoints/STO/51,
-    68/stations', u'gridX':51,
-    u'forecastGridData':'https://api.weather.gov/gridpoints/STO/51,
-    68', u'gridY':68,
-    u'forecastOffice':'https://api.weather.gov/offices/STO',
-    u'@id':'https://api.weather.gov/points/38.6524,
-    -121.1896', u'gridId':'STO'
-    }
+"status":"success",
+"data":{
+"Table":[
+{
+"Plant_Code":"CA0026",
+"Plant":"Toronto",
+"Plant_Name":"Toronto (CA0026)",
+"Latitude":43.489410000,
+"Longitude":-79.620750000,
+"Country_Name":"Canada",
+"State_Name":null,
+"Weather_Id":"801",
+"Weather_Main":"Clouds",
+"Weather_Description":"few clouds",
+"Weather_Icon":"02d",
+"BG_Color":"#deb730",
+"Temperature":"17.61 °C",
+"Min_Tempearature":"15.02 °C",
+"Max_Temperature":"20.88 °C",
+"Pressure":"1010 hPa",
+"Humidity":"75 %",
+"Wind_Speed":"3.63 m/s",
+"Wind_Degree":"235 ° S",
+"Clouds_All":"13 %",
+"Rain_1hr":"0.00 mm",
+"Rain_3hr":"0.00 mm",
+"Snow_1hr":"0.00 mm",
+"Snow_3hr":"0.00 mm",
+"System_Id":"2010070",
+"System_Type":"2",
+"SunRise_GMT":"09:47 AM",
+"SunRise_Local":"05:47 AM",
+"SunSet_GMT":"12:59 AM",
+"SunSet_Local":"08:59 PM",
+"Weather_Date_GMT":"2022-07-11T11:31:36",
+"Weather_Date_Local":"2022-07-11T07:31:36",
+"Base_Station":"stations",
+"Visibilty":"10000",
+"Zone_Name":"Clarkson",
+"Zone_Time":"-14400",
+"Added_Date":"2022-07-11T17:01:37.077",
+"COUNTRY_NAME1":null
+}
+]
+},
+"message":""
+}
