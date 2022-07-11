@@ -1,0 +1,40 @@
+{
+    u'radarStation':'KDAX',
+    u'fireWeatherZone':'https://api.weather.gov/zones/fire/CAZ217',
+    u'@type':'wx:Point',
+    u'forecastZone':'https://api.weather.gov/zones/forecast/CAZ017',
+    u'county':'https://api.weather.gov/zones/county/CAC067',
+    u'timeZone':'America/Los_Angeles',
+    u'forecast':'https://api.weather.gov/gridpoints/STO/51,
+    68/forecast', u'cwa':'STO',
+    u'relativeLocation':{
+    u'type':'Feature',
+    u'geometry':{
+    u'coordinates':[
+    -121.147656,
+    38.6759569
+    ],
+    u'type':'Point'
+    },
+    u'properties':{
+    u'distance':{
+    u'unitCode':'wmoUnit:m',
+    u'value':4485.91884608
+    },
+    u'city':'Folsom',
+    u'bearing':{
+    u'unitCode':'wmoUnit:degree_(angle)',
+    u'value':234
+    },
+    u'state':'CA'
+    }
+    },
+    u'forecastHourly':'https://api.weather.gov/gridpoints/STO/51,
+    68/forecast/hourly', u'observationStations':'https://api.weather.gov/gridpoints/STO/51,
+    68/stations', u'gridX':51,
+    u'forecastGridData':'https://api.weather.gov/gridpoints/STO/51,
+    68', u'gridY':68,
+    u'forecastOffice':'https://api.weather.gov/offices/STO',
+    u'@id':'https://api.weather.gov/points/38.6524,
+    -121.1896', u'gridId':'STO'
+    }
