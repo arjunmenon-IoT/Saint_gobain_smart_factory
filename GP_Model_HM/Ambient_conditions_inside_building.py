@@ -31,5 +31,6 @@ print(Absolute_Humidity_g_kg(Temperature,relative_humdity)) # returns the Absolt
 print(Absolute_pressure(Site_elevation)) # return sthe absloute pressure fo the site 
 print(weatherdata[0]["Weather_Date_Local"]) # returns the Local Time that read the value
 #print (system.date.parse(weatherdata[0]["Weather_Date_Local"], "yyyy-MM-dd'T'HH:mm:ss"))
-parse_date_time =  str(system.date.parse(weatherdata[0]["Weather_Date_Local"], "yyyy-MM-dd'T'HH:mm:ss")).split()
+parse_date_time =  str(system.date.parse(weatherdata[0]["Weather_Date_Local"], "yyyy-MM-dd'T'HH:mm:ss")).split() #Unicode to string object
 print (parse_date_time[0]+' ' + parse_date_time[1] + ' '+parse_date_time[2] + ' ' + parse_date_time[3] + ' ' +parse_date_time[5])
+
