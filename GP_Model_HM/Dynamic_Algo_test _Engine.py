@@ -45,10 +45,10 @@ def MVOL(Temperature,Humidity,Static_Pressure):
         return MVOL  # Round the value to 2 decimal points
 
 def R30(Flow_After_Filter_Temp,G14,G13,Ambient_Humidity,Air_Ingress_Filter,L10,System_fan_Heat_Release):
-        value =True
-        while(value):
-            T15 =0
-            T16 = 0
+        #value =True
+        #while(value):
+            T15 =0.01
+            T16 = 0.01
             P9 = CS(Flow_After_Filter_Temp,((G14*G13+Ambient_Humidity*Air_Ingress_Filter - 1000*L10)/(G13+Air_Ingress_Filter)))*(G13+Air_Ingress_Filter)
             R9 = P9+System_fan_Heat_Release
             T17=TEM(R9/(G13+Air_Ingress_Filter),((G14*G13+Ambient_Humidity*Air_Ingress_Filter - 1000*L10)/(G13+Air_Ingress_Filter)))
@@ -100,9 +100,12 @@ AIII_back_conversion_Converstional_Ratio = .01
   
 
 def testrun(Flow_After_Filter_Temp,Ambient_Humidity,Air_Ingress_Filter,Air_Ingress_Mill,System_fan_Heat_Release,Ambient_Absolute_Pressure,Recirculation_Air_Volumetric_Flow,Gas_Flow,Fuel_property_Density,Fuel_Property_Combustion_Water,Combustion_Air_Volumetric_Flow,Combustion_Air_Temp,Moisture,Stucco_Flow,Gypsum_Moisture,HH,AIII,AII,AIII_back_conversion_Converstional_Ratio):
+        
+    Recirculation_Humidity1 =0.1
+    while (Recirculation_Humidity1<479):
         G14_1 = 0.01
         G13_1 = 0.01
-        Recirculation_Humidity1 =0
+        
         I39_1 = I39(Moisture , Stucco_Flow ,Gypsum_Moisture)
         L10_1 = L10(Moisture, Stucco_Flow , Gypsum_Moisture ,HH,AIII,AII,AIII_back_conversion_Converstional_Ratio)
         R30_1 = R30(Flow_After_Filter_Temp,G14_1,G13_1,Ambient_Humidity,Air_Ingress_Filter,L10_1,System_fan_Heat_Release)
@@ -115,7 +118,7 @@ def testrun(Flow_After_Filter_Temp,Ambient_Humidity,Air_Ingress_Filter,Air_Ingre
         P6_1 = P6(G13_1,Air_Ingress_Filter)
         Recirculation_Humidity1 =Recirculation_Humidity(G14_1,G13_1,Ambient_Humidity,Air_Ingress_Filter,L10_1,P6_1)
 
-        print (Recirculation_Humidity1)
+        print (Recirculation_Humidity1,"here")
 
 print(testrun(Flow_After_Filter_Temp,Ambient_Humidity,Air_Ingress_Filter,Air_Ingress_Mill,System_fan_Heat_Release,Ambient_Absolute_Pressure,Recirculation_Air_Volumetric_Flow,Gas_Flow,Fuel_property_Density,Fuel_Property_Combustion_Water,Combustion_Air_Volumetric_Flow,Combustion_Air_Temp,Moisture,Stucco_Flow,Gypsum_Moisture,HH,AIII,AII,AIII_back_conversion_Converstional_Ratio))
 
