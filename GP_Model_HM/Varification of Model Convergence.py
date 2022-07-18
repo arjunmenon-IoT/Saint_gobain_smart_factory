@@ -1,4 +1,52 @@
 Energy_Inputs = F34+(F43+I8)+(V35+X44) + (R2+X48)
+    F34 = SHSolid(F33, (0.01*D33)*F31, 0, 0, (1-0.01*D33)*F31, F32)
+        F33 = Ambient_Temperature
+        D33 = Gypsum_Purity
+        F31 = D32*(1 - 0.01*D34)*1000/3600
+            D32 = StuccoToGypsum(0.01*O20,0.01*O21,0.01*O22)*(1-0.01*O19)*O18/(1-0.01*D34)
+                O20 = HH
+                O21 = AIII
+                O22 = AII
+                O19 = Moisture
+                O18 = Stucco_Flow
+                D34 = Gypsum_Moisture
+            D34 = Gypsum_Moisture
+        F32 = D32*(0.01*D34)*1000/3600
+            D32 = StuccoToGypsum(0.01*O20,0.01*O21,0.01*O22)*(1-0.01*O19)*O18/(1-0.01*D34)
+            D34 = Gypsum_Moisture
+    F43 = CS(F39,F41)*F40
+        F39 = Ambient_Temperature
+        F41 = Ambient_Humidity
+        F40 = Air_Ingress_Mill
+    I8 = CS(I4,I6)*I5
+        I4 = Ambient_Temperature
+        I6 = Ambient_Humidity
+        I5 = Air_Ingress_Filter
+    V35 = 860*V30*AA32)/3600
+        V30 = Combustion_Gas_flow_Calculated
+        AA32 = AA31/860
+            AA31 = AA30*0.901
+                AA30 = Fuel_property_Gas_Calorific_Value
+
+
+    X44 = CS(X40,X42)*X41
+        X40 = Combustion_Air_Temperature
+        X42 = Ambient_Humidity
+        X41 =X43*X39/(1+X42/1000)
+            X43 = Combustion_Air_Volumetric_Flow
+            X39 = MVOL(X40,X42,Pressure_Pa_To_mmWC(100*D6-101325)
+                X40 = Combustion_Air_Temperature
+                X42 = Ambient_Humidity
+                D6 = Ambient_Absolute_Pressure
+            X42 = Ambient_Humidity
+
+
+
+    R2 = System_fan_Heat_Release
+    X48 = CS(U40,X42)*X41 - CS(X40,X42)*X41
+
+
+
 Energy_Outputs = (I35+I36+I40-L11) + (O15) + (I48+L5) + (T9)
 Energy_Error = 100*(D54-E54)/D54
 
