@@ -34,7 +34,7 @@ Energy_Inputs = F34+(F43+I8)+(V35+X44) + (R2+X48)
         X42 = Ambient_Humidity
         X41 =X43*X39/(1+X42/1000)
             X43 = Combustion_Air_Volumetric_Flow
-            X39 = MVOL(X40,X42,Pressure_Pa_To_mmWC(100*D6-101325)
+            X39 = MVOL(X40,X42,Pressure_Pa_To_mmWC(100*D6-101325))
                 X40 = Combustion_Air_Temperature
                 X42 = Ambient_Humidity
                 D6 = Ambient_Absolute_Pressure
@@ -44,10 +44,30 @@ Energy_Inputs = F34+(F43+I8)+(V35+X44) + (R2+X48)
 
     R2 = System_fan_Heat_Release
     X48 = CS(U40,X42)*X41 - CS(X40,X42)*X41
+        U40 = Combustion_Air_Temp
+        X42 = Ambient_Humidity
+        X41 = X43*X39/(1+X42/1000)
+            X43 = Combustion_Air_Volumetric_Flow
+            X39 = MVOL(X40,X42,Pressure_Pa_To_mmWC(100*D6-101325))
+                X40 =  Combustion_Air_Temp
+                X42 = Ambient_Humidity
+                D6 = Ambient_Absolute_Pressure
+            X42 = Ambient_Humidity
+        X40 =  Combustion_Air_Temp
+
 
 
 
 Energy_Outputs = (I35+I36+I40-L11) + (O15) + (I48+L5) + (T9)
+    I35 = O12*( 0.01*O20/MWhemihydrate()*DPG(0) + 0.01*O21/MWanhydrite()*DGA(0)  + 0.01*O22/MWanhydrite()*(DGA(0)+DAIA(0)) +  L9/(1-L9)*0.01*O21/MWanhydrite()*(DGA(0) - DPG(0)) )
+    I36 = I34*CL(0)
+    I40 = I39*CL(0)
+    L11 = O12*L9/(1-L9)*0.01*O21/MWanhydrite()*(DGA(0) - DPG(0)) + L10*CL(0)
+    O15 = SHSolid(O14, 0.01*$O$24*O12, 0.01*$O$20*O12, 0.01*($O$21 + $O$22)*O12, 0.01*$O$23*O12, O13)
+    I48 = Energy_KJ_To_Kcal((I46*3*(I47-$D$4)^1.25 + SIGMA()*0.95*((273.15+I47)^4 - (273.15+D4)^4))/1000)
+    L5 = Energy_KJ_To_Kcal((L3*3*(L4-$D$4)^1.25 + SIGMA()*0.95*((273.15+L4)^4 - (273.15+$D$4)^4))/1000)
+    T9 = P9+R2-R34
+
 Energy_Error = 100*(D54-E54)/D54
 
 Dry_Air_FLow_Input =  (V33+X41-V34)+(F40+I5)

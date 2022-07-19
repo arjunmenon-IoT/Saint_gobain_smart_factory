@@ -19,9 +19,6 @@ AIII = 5.0
 AII = 0.0
 AIII_back_conversion_Converstional_Ratio = 0
 
-
-
-
 def L41 (R31, Gas_Flow , Fuel_property_Density , Fuel_Property_Combustion_Water , Combustion_Air_Volumetric_Flow , Combustion_Air_Temp , Ambient_Humidity , Ambient_Absolute_Pressure):
     L41 = R31 + ((Gas_Flow*Fuel_property_Density/3600) - (Gas_Flow*Fuel_Property_Combustion_Water/3600)) + (Combustion_Air_Volumetric_Flow*(MVOL(Combustion_Air_Temp,Ambient_Humidity,Pressure_Pa_To_mmWC(100*Ambient_Absolute_Pressure-101325))/(1+Ambient_Humidity/1000)))
     return L41
@@ -64,6 +61,7 @@ def MVOL(Temperature,Humidity,Static_Pressure):
         MVOL = ((1 + Humidity / 1000) * (273.15 / (273.15 + Temperature)) * (101325 + Static_Pressure) / 101325) / (0.7735 + Humidity / 1000 * 1.2436)
         return MVOL  # Round the value to 2 decimal points
 
+
 def R30(Flow_After_Filter_Temp,G14,G13,Ambient_Humidity,Air_Ingress_Filter,L10,System_fan_Heat_Release):
     value =True
     while(value):
@@ -80,6 +78,13 @@ def R30(Flow_After_Filter_Temp,G14,G13,Ambient_Humidity,Air_Ingress_Filter,L10,S
             #print(T15,"\n")
             return R30
 
+
+def Recirculation_Humidity(G14,G13,Ambient_Humidity,Air_Ingress_Filter,L10,P6):
+
+    Recirculation_Humidity = (G14*G13+Ambient_Humidity*Air_Ingress_Filter - 1000*L10)/P6
+    return Recirculation_Humidity
+
+
 def TEM(Dh, Wh):
     A = 0.0000006 / 28.96 + (Wh / 1000) * 0.0000029 / 18.02
     B = 0.0068 / 28.96 + (Wh / 1000) * 0.0081 / 18.02
@@ -90,15 +95,18 @@ def TEM(Dh, Wh):
 
 CS = lambda Ts,Wh : 1000 * (((0.0068 * Ts + 0.0000006 * (Ts ** 2)) / 28.96) + (Wh / 1000) * ((0.0081 * Ts + 0.0000029 * (Ts**2)) / 18.02))
 Pressure_Pa_To_mmWC = lambda pressure : pressure / 9.80638278
+'''def R30(Flow_After_Filter_Temp,G14,G13,Ambient_Humidity,Air_Ingress_Filter,L10,System_fan_Heat_Release,Recirculation_Humidity):
+    R9 = CS(Flow_After_Filter_Temp,Recirculation_Humidity)*(G13+Air_Ingress_Filter) + System_fan_Heat_Release
+    R6 = (G13+Air_Ingress_Filter)
+    R7 = (G14*G13+Ambient_Humidity*Air_Ingress_Filter - 1000*L10)/(G13+Air_Ingress_Filter)
+    return TEM(R9/R6,R7)
+'''
 
-def Recirculation_Humidity(G14,G13,Ambient_Humidity,Air_Ingress_Filter,L10,P6):
 
-    Recirculation_Humidity = (G14*G13+Ambient_Humidity*Air_Ingress_Filter - 1000*L10)/P6
-    return Recirculation_Humidity
 
 
 L10 = L10(Moisture, Stucco_Flow , Gypsum_Moisture ,HH,AIII,AII,AIII_back_conversion_Converstional_Ratio)
-I39 = I39(Moisture , Stucco_Flow ,Gypsum_Moisture )
+I39 = I39(Moisture, Stucco_Flow ,Gypsum_Moisture )
 R30 = R30(Flow_After_Filter_Temp,G14,G13,Ambient_Humidity,Air_Ingress_Filter,L10,System_fan_Heat_Release)
 R29 = R29(Recirculation_Humidity,Ambient_Absolute_Pressure,R30)
 R31 = R31(Recirculation_Air_Volumetric_Flow , Recirculation_Humidity , R29)
@@ -108,5 +116,4 @@ P6 = P6(G13,Air_Ingress_Filter)
 L42 = L42(Recirculation_Humidity , Gas_Flow , Fuel_Property_Combustion_Water, Combustion_Air_Volumetric_Flow , Combustion_Air_Temp , Ambient_Humidity , Ambient_Absolute_Pressure , L41)
 G14 = G14(L42 , L41 , Ambient_Humidity , Air_Ingress_Mill , Moisture , Stucco_Flow , HH , AIII ,AII ,AIII_back_conversion_Converstional_Ratio,I39,G13)
 
-
-print(L10(Moisture, Stucco_Flow , Gypsum_Moisture ,HH,AIII,AII,AIII_back_conversion_Converstional_Ratio))
+print(Recirculation_Humidity(G14,G13,Ambient_Humidity,Air_Ingress_Filter,L10,P6))

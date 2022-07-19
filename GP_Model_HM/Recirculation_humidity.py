@@ -1,7 +1,3 @@
-
-from ctypes.wintypes import HHOOK
-
-
 Recirculation_Humidity =  (G14*G13+I6*I5 - 1000*L10)/P6
 G14 = (L42*L41 + F41*F40 + 1000*(I34 + I39))/G13
 
