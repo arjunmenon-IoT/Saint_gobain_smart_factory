@@ -1,13 +1,11 @@
 
-from ast import Lambda
-
 
 Flow_After_Filter_Temp = 152.5
 Ambient_Humidity =13.9
 Air_Ingress_Filter = 0
 Air_Ingress_Mill = 0
 System_fan_Heat_Release = 10
-Recirculation_Humidity = 0.01
+Recirculation_Humidity = 0.1
 Ambient_Absolute_Pressure =1003.0
 Recirculation_Air_Volumetric_Flow = 9
 Gas_Flow = 647
@@ -46,7 +44,17 @@ def Recirculation_humidity(Recirculation_Humidity,Recirculation_Air_Volumetric_F
         GH = System_fan_Heat_Release
         HI =Flow_After_Filter_Temp
 
-        A = MVOL( R30,X,Pressure_Pa_To_mmWC(100*EF-101325))
+
+        Pressure_Pa_To_mmWC = lambda pressure : pressure / 9.80638278
+
+        CS = lambda Ts,Wh : 1000 * (((0.0068 * Ts + 0.0000006 * (Ts ** 2)) / 28.96) + (Wh / 1000) * ((0.0081 * Ts + 0.0000029 * (Ts**2)) / 18.02))
+
+        R30 = lambda X,V,BD,GH,P,A,Q,U,R,S,B,HI : TEM(((CS(HI,X)*((( P*A/(1+X/1000) + ((Q*U/3600) - (Q*R/3600)) + (S*B))+ V)+BD))+GH)/((( P*A/(1+X/1000) + ((Q*U/3600) - (Q*R/3600)) + (S*B))+ V)+BD),X)
+        MVOL = lambda Temperature,Humidity,Static_Pressure : (1 + Humidity / 1000) * (273.15 / (273.15 + Temperature) * (101325 + Static_Pressure / 101325) / (0.7735 + Humidity / 1000 * 1.2436))
+        
+
+        A_1 = (100*EF-101325)/9.80638278
+        A = MVOL( R30,X,A_1)
         print("Here 3")
         B= MVOL(DE,T,Pressure_Pa_To_mmWC(100*EF-101325))/(1+T/1000)
         print("Here 4")
@@ -56,7 +64,6 @@ def Recirculation_humidity(Recirculation_Humidity,Recirculation_Air_Volumetric_F
         X1 =  ( G14 *( ( ( P * ( A ) / (1+X/1000) )+ ((Q*U/3600) - (Q*R/3600)) + (S*(B))) + V )+T*(BD) - 1000*L10)/( ( ( ( P * ( A ) / (1+X/1000) )+ ((Q*U/3600) - (Q*R/3600)) + (S*(B))) + V ) + (BD) )
         print("Here 6")
         return X1
-       
 
 def TEM(Dh, Wh):
       A = 0.0000006 / 28.96 + (Wh / 1000) * 0.0000029 / 18.02
@@ -68,15 +75,7 @@ def TEM(Dh, Wh):
 
 
 
-def MVOL(Temperature,Humidity,Static_Pressure):
-        return (((1 + Humidity / 1000) * (273.15 / (273.15 + Temperature)) * (101325 + Static_Pressure) / 101325) / (0.7735 + Humidity / 1000 * 1.2436))  # Round the value to 2 decimal points
 
-Pressure_Pa_To_mmWC = lambda pressure : pressure / 9.80638278
-
-CS = lambda Ts,Wh : 1000 * (((0.0068 * Ts + 0.0000006 * (Ts ** 2)) / 28.96) + (Wh / 1000) * ((0.0081 * Ts + 0.0000029 * (Ts**2)) / 18.02))
-
-
-R30 = lambda X,V,BD,GH,P,A,Q,U,R,S,B,HI : TEM(((CS(HI,X)*((( P*A/(1+X/1000) + ((Q*U/3600) - (Q*R/3600)) + (S*B))+ V)+BD))+GH)/((( P*A/(1+X/1000) + ((Q*U/3600) - (Q*R/3600)) + (S*B))+ V)+BD),X)
 
 
 print(Recirculation_humidity(Recirculation_Humidity,Recirculation_Air_Volumetric_Flow,Gas_Flow,Fuel_Property_Combustion_Water,Combustion_Air_Volumetric_Flow,Ambient_Humidity,Fuel_property_Density,Flow_After_Filter_Temp,Air_Ingress_Mill,System_fan_Heat_Release ,Moisture,Stucco_Flow,HH,AIII,AII,AIII_back_conversion_Converstional_Ratio,Air_Ingress_Filter,Combustion_Air_Temp, Ambient_Absolute_Pressure,Gypsum_Moisture))
