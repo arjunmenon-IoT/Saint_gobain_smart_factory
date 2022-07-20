@@ -58,6 +58,9 @@ Energy_Inputs = F34+(F43+I8)+(V35+X44) + (R2+X48)
 
 
 
+
+
+
 Energy_Outputs = (I35+I36+I40-L11) + (O15) + (I48+L5) + (T9)
     I35 = O12*( 0.01*O20/MWhemihydrate()*DPG(0) + 0.01*O21/MWanhydrite()*DGA(0)  + 0.01*O22/MWanhydrite()*(DGA(0)+DAIA(0)) +  L9/(1-L9)*0.01*O21/MWanhydrite()*(DGA(0) - DPG(0)) )
     I36 = I34*CL(0)

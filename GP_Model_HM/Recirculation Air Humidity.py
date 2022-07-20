@@ -17,19 +17,19 @@ StuccoToGypsum =  lambda Hemihydrate, AIII, AII :1 + Hemihydrate * 1.5 * 18.0153
 def mill_outlet_flow_humidity():
     
     HUMIDITY =0
-    while(HUMIDITY<600):
+    while(HUMIDITY<500):
         midvalue = HUMIDITY
         WET_GYPSUM_FLOW = StuccoToGypsum(0.01*HH,0.01*AIII,0.01*AII)*(1-0.01*gypsum_moisture)*Stucco_Flow/(1-0.01*gypsum_moisture)
-        I34 =( ( (1-0.01*Moisture)*Stucco_Flow*1000/3600)*(0.01*HH/145.148*1.5 + 0.01*(AIII+AII)/136.138*2 + conversion_ratio/(1-conversion_ratio)*0.01*AIII/136.138*0.5)*18.0153 )
-        I39 = (WET_GYPSUM_FLOW*(0.01*gypsum_moisture)*1000/3600) - (0.01*gypsum_moisture*Stucco_Flow*1000/3600)
+        DISSOCIATION_WATER =( ( (1-0.01*Moisture)*Stucco_Flow*1000/3600)*(0.01*HH/145.148*1.5 + 0.01*(AIII+AII)/136.138*2 + conversion_ratio/(1-conversion_ratio)*0.01*AIII/136.138*0.5)*18.0153 )
+        DRYING_WATER = (WET_GYPSUM_FLOW*(0.01*gypsum_moisture)*1000/3600) - (0.01*gypsum_moisture*Stucco_Flow*1000/3600)
 
-        R30 = TEM(((CS(Flow_After_Filter_Temp,HUMIDITY)*(Bridge_Flow_dry_Flow+Air_Ingress_Mill+Air_Ingress_Filter))+System_fan_Heat_Release)/( Bridge_Flow_dry_Flow+Air_Ingress_Mill+ Air_Ingress_Filter),HUMIDITY)
-        R29 = MVOL(R30,HUMIDITY,Pressure_Pa_To_mmWC(100*Ambient_Absolute_Pressure-101325))
-        R31 = recirculation_air_vol_flow*R29/(1+HUMIDITY/1000)
+        RECIRCULATION_AIR_TEMP = TEM(((CS(Flow_After_Filter_Temp,HUMIDITY)*(Bridge_Flow_dry_Flow+Air_Ingress_Mill+Air_Ingress_Filter))+System_fan_Heat_Release)/( Bridge_Flow_dry_Flow+Air_Ingress_Mill+ Air_Ingress_Filter),HUMIDITY)
+        RECIRCULATION_AIR_DENSITY = MVOL(RECIRCULATION_AIR_TEMP,HUMIDITY,Pressure_Pa_To_mmWC(100*Ambient_Absolute_Pressure-101325))
+        RECIRCULATION_AIR_DRY_FLOW = recirculation_air_vol_flow*RECIRCULATION_AIR_DENSITY/(1+HUMIDITY/1000)
      
-        U41 = Combustion_Air_Volumetric_Flow* (MVOL(Combustion_Air_Temp,Ambient_Humidity,Pressure_Pa_To_mmWC(100*Ambient_Absolute_Pressure-101325))) /(1+Ambient_Humidity/1000)
-        L42 = (HUMIDITY*R31+1000*(Gas_Flow*Fuel_properties_combustion_water/3600)+U41*Ambient_Humidity)/Bridge_Flow_dry_Flow
-        MILL_OUTLET_FLOW_HUMIDITY = (L42*Bridge_Flow_dry_Flow + Ambient_Humidity*Air_Ingress_Mill + 1000*(I34 + I39))
+        COMBUSTION_AIR_DRY_FLOW = Combustion_Air_Volumetric_Flow* (MVOL(Combustion_Air_Temp,Ambient_Humidity,Pressure_Pa_To_mmWC(100*Ambient_Absolute_Pressure-101325))) /(1+Ambient_Humidity/1000)
+        BRIDGE__FLOW_HUMIDITY = (HUMIDITY*RECIRCULATION_AIR_DRY_FLOW+1000*(Gas_Flow*Fuel_properties_combustion_water/3600)+COMBUSTION_AIR_DRY_FLOW*Ambient_Humidity)/Bridge_Flow_dry_Flow
+        MILL_OUTLET_FLOW_HUMIDITY = (BRIDGE__FLOW_HUMIDITY*Bridge_Flow_dry_Flow + Ambient_Humidity*Air_Ingress_Mill + 1000*(DISSOCIATION_WATER + DRYING_WATER))
         HUMIDITY =  MILL_OUTLET_FLOW_HUMIDITY/(Bridge_Flow_dry_Flow + Air_Ingress_Mill)
         if(midvalue >= HUMIDITY ):
             return HUMIDITY 
