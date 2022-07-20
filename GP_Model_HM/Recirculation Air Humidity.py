@@ -16,8 +16,8 @@ CS = lambda Ts,Wh : 1000 * (((0.0068 * Ts + 0.0000006 * (Ts ** 2)) / 28.96) + (W
 StuccoToGypsum =  lambda Hemihydrate, AIII, AII :1 + Hemihydrate * 1.5 * 18.0153 / 145.148 + (AIII + AII) * 2 * 18.0153 / 136.138
 def mill_outlet_flow_humidity():
     
-    HUMIDITY =.01
-    while(HUMIDITY<400):
+    HUMIDITY =0
+    while(HUMIDITY<600):
         midvalue = HUMIDITY
         WET_GYPSUM_FLOW = StuccoToGypsum(0.01*HH,0.01*AIII,0.01*AII)*(1-0.01*gypsum_moisture)*Stucco_Flow/(1-0.01*gypsum_moisture)
         I34 =( ( (1-0.01*Moisture)*Stucco_Flow*1000/3600)*(0.01*HH/145.148*1.5 + 0.01*(AIII+AII)/136.138*2 + conversion_ratio/(1-conversion_ratio)*0.01*AIII/136.138*0.5)*18.0153 )
@@ -31,8 +31,8 @@ def mill_outlet_flow_humidity():
         L42 = (HUMIDITY*R31+1000*(Gas_Flow*Fuel_properties_combustion_water/3600)+U41*Ambient_Humidity)/Bridge_Flow_dry_Flow
         MILL_OUTLET_FLOW_HUMIDITY = (L42*Bridge_Flow_dry_Flow + Ambient_Humidity*Air_Ingress_Mill + 1000*(I34 + I39))
         HUMIDITY =  MILL_OUTLET_FLOW_HUMIDITY/(Bridge_Flow_dry_Flow + Air_Ingress_Mill)
-        if(midvalue == HUMIDITY ):
-            return HUMIDITY
+        if(midvalue >= HUMIDITY ):
+            return HUMIDITY 
             break
  
 
@@ -41,14 +41,14 @@ def mill_outlet_flow_humidity():
 
 
 
-Bridge_Flow_dry_Flow = 10.09 # Tag 22
-Ambient_Humidity = 13.9      # Tag 3
-Air_Ingress_Mill =  0  
-Air_Ingress_Filter = 0      
-Gas_Flow = 648               # Tag 21
+Bridge_Flow_dry_Flow = 9.94 # Tag 22
+Ambient_Humidity = 26      # Tag 3
+Air_Ingress_Mill =  0 
+Air_Ingress_Filter = 0
+Gas_Flow = 640                           # Tag 21
 Fuel_properties_combustion_water = 1.61  # Tag 20
 Combustion_Air_Volumetric_Flow = 5       # Tag 16
-Ambient_Absolute_Pressure = 1003         # Tag (1,2,3)
+Ambient_Absolute_Pressure = 998.5         # Tag (1,2,3)
 Combustion_Air_Temp = 55                 # Tag 15
 recirculation_air_vol_flow = 9.5         # Tag 11
 Flow_After_Filter_Temp = 152.9           # Tag 27
