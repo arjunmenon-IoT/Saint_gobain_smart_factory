@@ -20,7 +20,7 @@ def Excess_Air():
     COMBUSTION_AIR_DENSITY = MVOL(Combustion_Air_Temp,Ambient_Humidity,Pressure_Pa_To_mmWC(100*(P_ALT(Site_Elevation)*101325/100)-101325))
     COMBUSTION_AIR_DRY_FLOW = Combustion_Air_Volumetric_Flow*COMBUSTION_AIR_DENSITY/(1+Ambient_Humidity/1000)
 
-    Excess_Air = 100*(COMBUSTION_AIR_DRY_FLOW/MVOL(0, 0, 0)*3600/(Gas_flow*Fuel_properties_Stochiometric_air_factor) - 1)
+    Excess_Air = 100*(COMBUSTION_AIR_DRY_FLOW/MVOL(0, 0, 0)*3600/(Gas_flow_Nm3*Fuel_properties_Stochiometric_air_factor) - 1)
     return Excess_Air
 
 print(Excess_Air())

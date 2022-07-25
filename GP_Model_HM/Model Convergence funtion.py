@@ -4,7 +4,7 @@ Air_Ingress_Mill =  0
 Air_Ingress_Filter = 0
 Gas_Flow = 648                           # Tag 21
 Fuel_properties_combustion_water = 1.61  # Tag 20
-Fuel_property_Gas_Calorific_Value = 8597
+Fuel_property_Gas_Calorific_Value = 8597 # Tag 17
 Combustion_Air_Volumetric_Flow = 5       # Tag 16
 Ambient_Absolute_Pressure = 1003         # Tag (1,2,3)
 Combustion_Air_Temp = 55                 # Tag 15
@@ -91,6 +91,7 @@ def Energy_Outputs(HUMIDITY):
 
 Energy_Error = lambda HUMIDITY : (Energy_Inputs()- Energy_Outputs(HUMIDITY))
 print(Energy_Error(348))
+print ()
 
     
     
