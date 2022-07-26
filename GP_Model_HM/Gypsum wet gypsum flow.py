@@ -13,7 +13,15 @@
 #AIII = tag9
 #AII = tag10
 
-
+HH=72
+AIII=7.8
+AII=0
+Moisture=0
+stucco_flow=31
+gypsum_Moisture = .5
 def Wet_gypsum_flow(HH,AIII,AII,Moisture,stucco_flow,gypsum_Moisture):
     StuccoToGypsum = lambda HH,AIII,AII : 1 + HH * 1.5 * 18.0153 / 145.148 + (AIII + AII) * 2 * 18.0153 /136.138
     return round(StuccoToGypsum(0.01*HH,0.01*AIII,0.01*AII)*(1-0.01*Moisture)*stucco_flow/(1-0.01*gypsum_Moisture),1)
+
+
+print(Wet_gypsum_flow(HH,AIII,AII,Moisture,stucco_flow,gypsum_Moisture))

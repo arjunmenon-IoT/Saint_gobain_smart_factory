@@ -16,8 +16,8 @@ CS = lambda Ts,Wh : 1000 * (((0.0068 * Ts + 0.0000006 * (Ts ** 2)) / 28.96) + (W
 StuccoToGypsum =  lambda Hemihydrate, AIII, AII :1 + Hemihydrate * 1.5 * 18.0153 / 145.148 + (AIII + AII) * 2 * 18.0153 / 136.138
 def mill_outlet_flow_humidity():
     
-    HUMIDITY =0
-    while(HUMIDITY<500):
+    HUMIDITY =0.001
+    while(HUMIDITY<1000):
         midvalue = HUMIDITY
         WET_GYPSUM_FLOW = StuccoToGypsum(0.01*HH,0.01*AIII,0.01*AII)*(1-0.01*gypsum_moisture)*Stucco_Flow/(1-0.01*gypsum_moisture)
         DISSOCIATION_WATER =( ( (1-0.01*Moisture)*Stucco_Flow*1000/3600)*(0.01*HH/145.148*1.5 + 0.01*(AIII+AII)/136.138*2 + conversion_ratio/(1-conversion_ratio)*0.01*AIII/136.138*0.5)*18.0153 )
@@ -41,17 +41,17 @@ def mill_outlet_flow_humidity():
 
 
 
-Bridge_Flow_dry_Flow = 9.94 # Tag 22
-Ambient_Humidity = 26      # Tag 3
-Air_Ingress_Mill =  0 
+Bridge_Flow_dry_Flow = 9.99 # Tag 22
+Ambient_Humidity = 20      # Tag 3
+Air_Ingress_Mill =  0
 Air_Ingress_Filter = 0
-Gas_Flow = 640                           # Tag 21
+Gas_Flow = 648                          # Tag 21
 Fuel_properties_combustion_water = 1.61  # Tag 20
-Combustion_Air_Volumetric_Flow = 5       # Tag 16
-Ambient_Absolute_Pressure = 998.5         # Tag (1,2,3)
+Combustion_Air_Volumetric_Flow = 5.16       # Tag 16
+Ambient_Absolute_Pressure = 1003         # Tag (1,2,3)
 Combustion_Air_Temp = 55                 # Tag 15
 recirculation_air_vol_flow = 9.5         # Tag 11
-Flow_After_Filter_Temp = 152.9           # Tag 27
+Flow_After_Filter_Temp = 152.5           # Tag 27
 System_fan_Heat_Release = 10       
 Moisture = 0                             # Tag 7
 Stucco_Flow = 31                         # Tag 6
