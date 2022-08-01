@@ -36,15 +36,21 @@ def mill_outlet_flow_humidity():
             break
  
 
-        
 
+
+"""
+Bridge_Flow_dry_Flow = HUMIDITY+ (V33 - V34) + U41
+Gas_Flow
+Flow_After_Filter_Temp
+
+"""
 
 
 
 Bridge_Flow_dry_Flow = 9.99 # Tag 22
 Ambient_Humidity = 20      # Tag 3
 Air_Ingress_Mill =  0
-Air_Ingress_Filter = 500
+Air_Ingress_Filter = 0
 Gas_Flow = 648                          # Tag 21
 Fuel_properties_combustion_water = 1.61  # Tag 20
 Combustion_Air_Volumetric_Flow = 5.16       # Tag 16
