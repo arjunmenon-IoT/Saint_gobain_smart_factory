@@ -1,5 +1,13 @@
 
+"""
+This code gives us the 
+1) Recirculation Air Dry Flow
+2) Recirculation Air Energy Flow
+3) HUMIDITY (recirculation)
+4) GAS FLOW
+5) Bridge flow Dry Flow
 
+"""
 
 SHG = lambda T: 21.84 * T + 0.076 * (T ** 2 / 2 + 273.15 * T)
 SHP = lambda T : 11.48 * T + 0.061 * (T ** 2 / 2 + 273.15 * T)
@@ -96,53 +104,72 @@ def INPUT_MATERIAL_liquid_water_flow(): #DEFINED COMPLEATLY - F32
     return GYPSUM_wet_gypsum_flow()*(0.01*GYPSUM_MOISTURE)*1000/3600
 
 
-recirculation_air_dry_flow = 0.1
-while(recirculation_air_dry_flow < 10) :
-        GAS_FLOW = 0.1  # KEEP CONSTANT FOR NOW
-        HUMIDITY = 0.1 # CONSTANT FOR NOW
-        recirculated_air_energy_flow = 0.1 #Initilised value
+recirculation_air_dry_flow = 0.1 # KEEP CONSTANT FOR NOW
+GAS_FLOW = 0.1  # KEEP CONSTANT FOR NOW
+HUMIDITY = 0.1 # CONSTANT FOR NOW
+recirculated_air_energy_flow = 0.1 #Initilised value
+while(HUMIDITY < 500) :
 
 
-        O23 = StuccoToGypsum(0.01*HH,0.01*AIII,0.01*AII)*(1 - 0.01*GYPSUM_PURITY)*100
-        V33 = GAS_FLOW * FUEL_PROPERTIES_DENSITY / 3600
-        V34 = GAS_FLOW*FUEL_PROPERTIES_COMBUSTION_WATER/3600
         U41 = COMBUSTION_AIR_VOLUMETRIC_FLOW*(MVOL(COMBUSTION_AIR_VOLUMETRIC_FLOW,AMBIENT_HUMIDITY,Pressure_Pa_To_mmWC(100*ABSOLUTE_PRESSURE-101325)))/(1+AMBIENT_HUMIDITY/1000)
-        Bridge_Flow_dry_Flow =    recirculation_air_dry_flow + (V33 - V34) + U41
-        G13 = Bridge_Flow_dry_Flow + AIR_INGRESS_MILL
-        L42 = (HUMIDITY*recirculation_air_dry_flow+1000*V34+U41*AMBIENT_HUMIDITY)/Bridge_Flow_dry_Flow
-        G14 = (L42*Bridge_Flow_dry_Flow + AMBIENT_HUMIDITY*AIR_INGRESS_MILL + 1000*(DISSOCIATION_water() + DRYING_water()))/G13
-        G16 = CS(CALCINATION_TEMPERATURE,G14)*G13
+        O23 = StuccoToGypsum(0.01*HH,0.01*AIII,0.01*AII)*(1 - 0.01*GYPSUM_PURITY)*100
+        
         O12 =  (1-0.01*MOISTURE)*STUCCO_FLOW*1000/3600
         O13=   0.01*MOISTURE*STUCCO_FLOW*1000/3600
+        L5 =  Energy_KJ_To_Kcal((WALL_LOSSES_FROM_CP_OUTLET_TO_FILTER_OUTLET_WALL_SURFACE*3*(WALL_LOSSES_FROM_BURNER_TO_CP_OUTLET_WALL_SURFACE-AMBIENT_TEMPERATURE)**1.25 + SIGMA()*0.95*((273.15+WALL_LOSSES_FROM_BURNER_TO_CP_OUTLET_WALL_SURFACE)**4 - (273.15+AMBIENT_TEMPERATURE)**4))/1000)
+        fuel_properties_lower_heating_value = FUEL_PROPERTIES_GAS_CALORIFIC_VALUE_HHV*0.901/860 #tested
+        combustion_air_density=  MVOL(COMBUSTION_AIR_TEMPERATURE,AMBIENT_HUMIDITY,Pressure_Pa_To_mmWC(100*ABSOLUTE_PRESSURE-101325))  #tested
+        combustion_air_enegry_flow = CS(COMBUSTION_AIR_TEMPERATURE,AMBIENT_HUMIDITY)*(COMBUSTION_AIR_VOLUMETRIC_FLOW*combustion_air_density/(1+AMBIENT_HUMIDITY/1000)) #tested
+        gypsum_wet_flow = StuccoToGypsum(0.01*HH,0.01*AIII,0.01*AII)*(1-0.01*MOISTURE)*STUCCO_FLOW/(1-0.01*GYPSUM_MOISTURE)
+        stucoo_impurity = StuccoToGypsum(0.01*HH,0.01*AIII,0.01*AII)*(1 - 0.01*GYPSUM_PURITY)*100
+        output_material_dry_flow = (1-0.01*MOISTURE)*STUCCO_FLOW*1000/3600
+        output_material_liquid_flow = 0.01*MOISTURE*STUCCO_FLOW*1000/3600
+        inleakage_in_filter_area_energy_flow = CS(AMBIENT_TEMPERATURE,AMBIENT_HUMIDITY)*AIR_INGRESS_FILTER
+        air_entrailment_energy_flow =  CS(AMBIENT_TEMPERATURE,AMBIENT_HUMIDITY)*AIR_INGRESS_MILL
+        wall_losses_from_cp_outlet_to_filter_outlet_losses = Energy_KJ_To_Kcal((WALL_LOSSES_FROM_CP_OUTLET_TO_FILTER_OUTLET_WALL_SURFACE*3*(WALL_LOSSES_FROM_CP_OUTLET_TO_FILTER_OUTLET_TEMPERATURE-AMBIENT_TEMPERATURE)**1.25 + SIGMA()*0.95*((273.15+WALL_LOSSES_FROM_CP_OUTLET_TO_FILTER_OUTLET_TEMPERATURE)**4 - (273.15+AMBIENT_TEMPERATURE)**4))/1000)
+        wall_losses_from_burner_to_CP_outlet_losses = Energy_KJ_To_Kcal((WALL_LOSSES_FROM_BURNER_TO_CP_OUTLET_WALL_SURFACE*3*(WALL_LOSSES_FROM_BURNER_TO_CP_OUTLET_TEMPERATURE-AMBIENT_TEMPERATURE)**1.25 + SIGMA()*0.95*((273.15+WALL_LOSSES_FROM_BURNER_TO_CP_OUTLET_TEMPERATURE)**4 - (273.15+AMBIENT_TEMPERATURE)**4))/1000)
+
+
+
+        V33 = GAS_FLOW * FUEL_PROPERTIES_DENSITY / 3600
+        V34 = GAS_FLOW*FUEL_PROPERTIES_COMBUSTION_WATER/3600
+
+
+
+        Bridge_Flow_dry_Flow =    recirculation_air_dry_flow + (V33 - V34) + U41
+        L42 = (HUMIDITY*recirculation_air_dry_flow+1000*V34+U41*AMBIENT_HUMIDITY)/Bridge_Flow_dry_Flow
+        G13 = Bridge_Flow_dry_Flow + AIR_INGRESS_MILL
+        G14 = (L42*Bridge_Flow_dry_Flow + AMBIENT_HUMIDITY*AIR_INGRESS_MILL + 1000*(DISSOCIATION_water() + DRYING_water()))/G13
+        G16 = CS(CALCINATION_TEMPERATURE,G14)*G13
+        
+
+       
+       
         I20 =  SHSolid(CALCINATION_TEMPERATURE, 0.01*( 100 - HH-AIII-AII-O23)*O12, 0.01*HH*O12 - AIII_BACK_CONVERSTION_CONVERSION_RATIO/(1-AIII_BACK_CONVERSTION_CONVERSION_RATIO)*0.01*AIII*O12*MWhemihydrate()/MWanhydrite(), (0.01*AIII + 0.01*AII)*O12 + AIII_BACK_CONVERSTION_CONVERSION_RATIO/(1-AIII_BACK_CONVERSTION_CONVERSION_RATIO)*0.01*AIII*O12,  0.01*O23*O12, O13)
         gypsum_wet_flow = StuccoToGypsum(0.01*HH,0.01*AIII,0.01*AII)*(1-0.01*MOISTURE)*STUCCO_FLOW/(1-0.01*GYPSUM_MOISTURE)
 
         I17 =   (gypsum_wet_flow*(1 - 0.01*GYPSUM_MOISTURE)*1000/3600)-DISSOCIATION_water()
         L11 =   O12*AIII_BACK_CONVERSTION_CONVERSION_RATIO/(1-AIII_BACK_CONVERSTION_CONVERSION_RATIO)*0.01*AIII/MWanhydrite()*(DGA(0) - DPG(0)) + ( O12-I17)*CL(0)
-        L5 =  Energy_KJ_To_Kcal((WALL_LOSSES_FROM_CP_OUTLET_TO_FILTER_OUTLET_WALL_SURFACE*3*(WALL_LOSSES_FROM_BURNER_TO_CP_OUTLET_WALL_SURFACE-AMBIENT_TEMPERATURE)**1.25 + SIGMA()*0.95*((273.15+WALL_LOSSES_FROM_BURNER_TO_CP_OUTLET_WALL_SURFACE)**4 - (273.15+AMBIENT_TEMPERATURE)**4))/1000)
         flow_after_filter_temp = InvSHMixture(G16+(CS(AMBIENT_TEMPERATURE,AMBIENT_HUMIDITY)*AIR_INGRESS_FILTER)+I20+L11-L5,(G13+AIR_INGRESS_FILTER),HUMIDITY,0.01*(100 - HH-AIII-AII-O23)*O12, 0.01*HH*O12, 0.01*(AIII + AII)*O12, 0.01*O23*O12, O13)
         recirculation_air_dry_flow = RECIRCULATION_AIR_VOLUMETRIC_FLOW *( MVOL((TEM(((CS(flow_after_filter_temp,HUMIDITY)*(Bridge_Flow_dry_Flow+AIR_INGRESS_MILL+AIR_INGRESS_MILL))+SYSTEM_FAN_HEAT_RELEASE)/(Bridge_Flow_dry_Flow+AIR_INGRESS_MILL)+AIR_INGRESS_FILTER,HUMIDITY)),HUMIDITY,Pressure_Pa_To_mmWC(100*ABSOLUTE_PRESSURE-101325)))/(1+HUMIDITY/1000)
-        print("recirculation_air_dry_flow =",recirculation_air_dry_flow , "Bridge_Flow_dry_Flow ",Bridge_Flow_dry_Flow)
+        #print("recirculation_air_dry_flow =",recirculation_air_dry_flow , "Bridge_Flow_dry_Flow ",Bridge_Flow_dry_Flow)
 
 
-        fuel_properties_lower_heating_value = FUEL_PROPERTIES_GAS_CALORIFIC_VALUE_HHV*0.901/860 #tested
-        combustion_density=  MVOL(COMBUSTION_AIR_TEMPERATURE,AMBIENT_HUMIDITY,Pressure_Pa_To_mmWC(100*ABSOLUTE_PRESSURE-101325))  #tested
-        combustion_air_enegry_flow = CS(COMBUSTION_AIR_TEMPERATURE,AMBIENT_HUMIDITY)*(COMBUSTION_AIR_VOLUMETRIC_FLOW*combustion_density/(1+AMBIENT_HUMIDITY/1000)) #tested
 
-        gypsum_wet_flow = StuccoToGypsum(0.01*HH,0.01*AIII,0.01*AII)*(1-0.01*MOISTURE)*STUCCO_FLOW/(1-0.01*GYPSUM_MOISTURE)
+
+
+
         input_material_dry_flow = gypsum_wet_flow*(1 - 0.01*GYPSUM_MOISTURE)*1000/3600
         material__after_calcination_dry_flow = input_material_dry_flow-DISSOCIATION_water()
         mill_output_flow_dry_flow =  Bridge_Flow_dry_Flow+AIR_INGRESS_MILL
-        stucoo_impurity = StuccoToGypsum(0.01*HH,0.01*AIII,0.01*AII)*(1 - 0.01*GYPSUM_PURITY)*100
-        output_material_dry_flow = (1-0.01*MOISTURE)*STUCCO_FLOW*1000/3600
-        output_material_liquid_flow = 0.01*MOISTURE*STUCCO_FLOW*1000/3600
+
         wall_losses_from_cp_oulet_to_filter_outlet = Energy_KJ_To_Kcal((WALL_LOSSES_FROM_CP_OUTLET_TO_FILTER_OUTLET_WALL_SURFACE*3*(WALL_LOSSES_FROM_CP_OUTLET_TO_FILTER_OUTLET_TEMPERATURE-AMBIENT_TEMPERATURE)**1.25 + SIGMA()*0.95*((273.15+WALL_LOSSES_FROM_CP_OUTLET_TO_FILTER_OUTLET_TEMPERATURE)**4 - (273.15+AMBIENT_TEMPERATURE)**4))/1000)
         aiii_back_conversion_recombined_water =  output_material_dry_flow - material__after_calcination_dry_flow
         dh = 100 - HH-AIII-AII-stucoo_impurity
         aiii_back_conversion_heat_release = output_material_dry_flow*AIII_BACK_CONVERSTION_CONVERSION_RATIO/(1-AIII_BACK_CONVERSTION_CONVERSION_RATIO)*0.01*AIII/MWanhydrite()*(DGA(0) - DPG(0)) + aiii_back_conversion_recombined_water*CL(0)
         material__after_calcination_energy_flow=  SHSolid(CALCINATION_TEMPERATURE, 0.01* dh *output_material_dry_flow, 0.01*HH*output_material_dry_flow - AIII_BACK_CONVERSTION_CONVERSION_RATIO/(1-AIII_BACK_CONVERSTION_CONVERSION_RATIO)*0.01*AIII*output_material_dry_flow*MWhemihydrate()/MWanhydrite(), (0.01*AIII + 0.01*AII)*output_material_dry_flow + AIII_BACK_CONVERSTION_CONVERSION_RATIO/(1-AIII_BACK_CONVERSTION_CONVERSION_RATIO)*0.01*AIII*output_material_dry_flow,  0.01*stucoo_impurity*output_material_dry_flow, output_material_liquid_flow)
-        inleakage_in_filter_area_energy_flow = CS(AMBIENT_TEMPERATURE,AMBIENT_HUMIDITY)*AIR_INGRESS_FILTER
-        combustion_air_dry_flow = COMBUSTION_AIR_VOLUMETRIC_FLOW*combustion_density/(1+AMBIENT_HUMIDITY/1000)
+  
+        combustion_air_dry_flow = COMBUSTION_AIR_VOLUMETRIC_FLOW*combustion_air_density/(1+AMBIENT_HUMIDITY/1000)
         Bridge_Flow_humidity = (HUMIDITY*recirculation_air_dry_flow+ 1000*(GAS_FLOW*FUEL_PROPERTIES_COMBUSTION_WATER/3600)+combustion_air_dry_flow*AMBIENT_HUMIDITY)/Bridge_Flow_dry_Flow
         #dissociation_water = output_material_dry_flow*(0.01*HH/MWhemihydrate()*1.5 + 0.01*(AIII+AII)/MWanhydrite()*2 + AIII_BACK_CONVERSTION_CONVERSION_RATIO/(1-AIII_BACK_CONVERSTION_CONVERSION_RATIO)*0.01*AIII/MWanhydrite()*0.5)*MWwater()
         input_material_liquid_flow = gypsum_wet_flow *(0.01*GYPSUM_MOISTURE)*1000/3600
@@ -155,13 +182,12 @@ while(recirculation_air_dry_flow < 10) :
 
         output_material_energy_flow =  SHSolid(flow_after_filter_temp, 0.01*dh*output_material_dry_flow, 0.01*HH*output_material_dry_flow, 0.01*(AIII + AII)*output_material_dry_flow, 0.01*stucoo_impurity*output_material_dry_flow, output_material_liquid_flow)
 
-        in_leakage_in_filter_area_energy_flow = CS(AMBIENT_TEMPERATURE,AMBIENT_HUMIDITY)*AIR_INGRESS_FILTER
+
 
         input_material_energy_flow =  SHSolid(AMBIENT_TEMPERATURE, (0.01*GYPSUM_PURITY)*input_material_dry_flow, 0, 0, (1-0.01*GYPSUM_PURITY)*input_material_dry_flow, input_material_liquid_flow)
 
-        air_entrailment_energy_flow =  CS(AMBIENT_TEMPERATURE,AMBIENT_HUMIDITY)*AIR_INGRESS_MILL
 
-        wall_losses_from_cp_outlet_to_filter_outlet_losses = Energy_KJ_To_Kcal((WALL_LOSSES_FROM_CP_OUTLET_TO_FILTER_OUTLET_WALL_SURFACE*3*(WALL_LOSSES_FROM_CP_OUTLET_TO_FILTER_OUTLET_TEMPERATURE-AMBIENT_TEMPERATURE)**1.25 + SIGMA()*0.95*((273.15+WALL_LOSSES_FROM_CP_OUTLET_TO_FILTER_OUTLET_TEMPERATURE)**4 - (273.15+AMBIENT_TEMPERATURE)**4))/1000)
+
 
         drying_evaporartion =drying_water*CL(0) 
 
@@ -170,12 +196,16 @@ while(recirculation_air_dry_flow < 10) :
 
         dissociation_dehydration = output_material_dry_flow*(0.01*HH/MWhemihydrate()*DPG(0) + 0.01*AIII/MWanhydrite()*DGA(0)  + 0.01*AII/MWanhydrite()*(DGA(0)-3180) +  AIII_BACK_CONVERSTION_CONVERSION_RATIO/(1-AIII_BACK_CONVERSTION_CONVERSION_RATIO)*0.01*AIII/MWanhydrite()*(DGA(0) - DPG(0)) )
 
-        wall_losses_from_burner_to_CP_outlet_losses = Energy_KJ_To_Kcal((WALL_LOSSES_FROM_BURNER_TO_CP_OUTLET_WALL_SURFACE*3*(WALL_LOSSES_FROM_BURNER_TO_CP_OUTLET_TEMPERATURE-AMBIENT_TEMPERATURE)**1.25 + SIGMA()*0.95*((273.15+WALL_LOSSES_FROM_BURNER_TO_CP_OUTLET_TEMPERATURE)**4 - (273.15+AMBIENT_TEMPERATURE)**4))/1000)
 
-        GAS_FLOW = (((dissociation_dehydration+dissociation_evaporartion+drying_evaporartion-aiii_back_conversion_heat_release )+(output_material_energy_flow)+(wall_losses_from_burner_to_CP_outlet_losses+wall_losses_from_cp_outlet_to_filter_outlet_losses)+(stack_energy_flow))-(AMBIENT_TEMPERATURE+(air_entrailment_energy_flow+in_leakage_in_filter_area_energy_flow)+(combustion_air_enegry_flow)+(SYSTEM_FAN_HEAT_RELEASE)))*3600/fuel_properties_lower_heating_value/860
+        GAS_FLOW = (((dissociation_dehydration+dissociation_evaporartion+drying_evaporartion-aiii_back_conversion_heat_release )+(output_material_energy_flow)+(wall_losses_from_burner_to_CP_outlet_losses+wall_losses_from_cp_outlet_to_filter_outlet_losses)+(stack_energy_flow))-(AMBIENT_TEMPERATURE+(air_entrailment_energy_flow+inleakage_in_filter_area_energy_flow)+(combustion_air_enegry_flow)+(SYSTEM_FAN_HEAT_RELEASE)))*3600/fuel_properties_lower_heating_value/860
 
         recirculated_air_temp = TEM(((CS(flow_after_filter_temp,HUMIDITY)*(Bridge_Flow_dry_Flow+AIR_INGRESS_MILL+AIR_INGRESS_MILL))+SYSTEM_FAN_HEAT_RELEASE)/(Bridge_Flow_dry_Flow+AIR_INGRESS_MILL)+AIR_INGRESS_FILTER,HUMIDITY)
         recirculated_air_energy_flow  =  CS(recirculated_air_temp,HUMIDITY)*recirculation_air_dry_flow 
 
-        print("recirculation_air_dry_flow =",recirculation_air_dry_flow , "Bridge_Flow_dry_Flow ",Bridge_Flow_dry_Flow,"GAS_FLOW",GAS_FLOW,"recirculated_air_energy_flow",recirculated_air_energy_flow, "recirculated_air_temp", recirculated_air_temp)
+
+        recirculation_air_density = MVOL(recirculated_air_temp,HUMIDITY,Pressure_Pa_To_mmWC(100*ABSOLUTE_PRESSURE-101325))
+        HUMIDITY =  mill_outlet_flow_humidity/(Bridge_Flow_dry_Flow + AIR_INGRESS_MILL)
+        print("Re Dry Flow =",recirculation_air_dry_flow , "Brdge Dry Flow =  ",Bridge_Flow_dry_Flow,"GAS_FLOW",GAS_FLOW,"Re Energy Flow =",recirculated_air_energy_flow, "Re Temp", recirculated_air_temp,"Re Density",recirculation_air_density,"HUMIDITY",HUMIDITY)
         
+
+
