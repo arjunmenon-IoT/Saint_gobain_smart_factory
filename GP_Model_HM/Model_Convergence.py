@@ -1,27 +1,16 @@
-from ast import If
-from random import randint, random
-from unittest import result
-from sqlalchemy import false, true
+MWgypsum = lambda : 172.171
+MWhemihydrate = lambda : 145.148
+MWanhydrite = lambda : 136.138
+MWimpurities = lambda : 172.171
+MWwater = lambda : 18.0153
 
-
-SHG = lambda T: 21.84 * T + 0.076 * (T ** 2 / 2 + 273.15 * T)
-SHP = lambda T : 11.48 * T + 0.061 * (T ** 2 / 2 + 273.15 * T)
-SHA = lambda T:  14.01 * T + 0.033 * (T ** 2 / 2 + 273.15 * T)
-SHImpurities = lambda T : 21.84 * T + 0.076 * (T ** 2 / 2 + 273.15 * T)
-SHW = lambda T : MWwater() * T
-
-SHSolid = lambda T,MG,MP,MA,MI,MW : SHG(T) / 172.171 * MG + SHP(T) / 145.148 * MP + SHA(T) / 136.138 * MA + SHImpurities(T) / 172.171 * MI + SHW(T) / 18.0153 * MW
-CS = lambda Ts,Wh : 1000 * (((0.0068 * Ts + 0.0000006 * (Ts ** 2)) / 28.96) + (Wh / 1000) * ((0.0081 * Ts + 0.0000029 * (Ts**2)) / 18.02)) 
-Pressure_Pa_To_mmWC = lambda pressure : pressure / 9.80638278
-StuccoToGypsum =  lambda Hemihydrate, AIII, AII :1 + Hemihydrate * 1.5 * 18.0153 / 145.148 + (AIII + AII) * 2 * 18.0153 / 136.138
-Energy_KJ_To_Kcal = lambda Energy :  Energy / 4.184
-SIGMA = lambda : 5.670367 * 10 ** (-8)
-CL = lambda Ts :  (746.2325 - 0.5466 * (Ts + 273.15))
-DGA = lambda T :685 + 28.3 * (273.15 + T) - 0.0215 * (273.15 + T) ** 2
-DPG = lambda T : 297 + 16.67 * (273.15 + T) - 0.0075 * (273.15 + T) ** 2
-CSV = lambda  T1,T2: 1000 * (0.0081 * T1 + 0.0000029 * (T1 ** 2) - 0.0081 * T2 - 0.0000029 * (T2 ** 2)) / 18.02
-
-
+AIR_INGRESS_FILTER= 0
+AIR_INGRESS_MILL  = 0
+FUEL_PROPERTIES_DENSITY = 0.78
+FUEL_PROPERTIES_COMBUSTION_WATER = 1.61
+FUEL_PROPERTIES_GAS_CALORIFIC_VALUE_HHV = 9542
+AMBIENT_HUMIDITY = 7
+ABSOLUTE_PRESSURE = 1000.66 #2
 def InvSHMixture(Etot, Mflow, Wh, MG, MP, MA, MI, MW):
     A = (0.0006 / 28.96 + Wh * 0.0000029 / 18.02) * Mflow + 0.076 / 2 / MWgypsum() * MG + 0.061 / 2 / MWhemihydrate() * MP + 0.033 / 2 / MWanhydrite() * MA + 0.076 / 2 / MWimpurities() * MI
     B = (6.8 / 28.96 + Wh * 0.0081 / 18.02) * Mflow + (21.84 + 0.076 * 273.15) / MWgypsum() * MG + (11.48 + 0.061 * 273.15) / MWhemihydrate() * MP + (14.01 + 0.033 * 273.15) / MWanhydrite() * MA + (21.84 + 0.076 * 273.15) / MWimpurities() * MI + MWwater() / MWwater() * MW
@@ -32,7 +21,7 @@ def InvSHMixture(Etot, Mflow, Wh, MG, MP, MA, MI, MW):
     return InvSHMixture
 
 def MVOL(Temperature,Humidity,Static_Pressure):
-        MVOL = ((1 + Humidity / 1000) * (273.15 / (273.15 + Temperature)) * (101325 + Static_Pressure) / 101325) / (0.7735 + Humidity / 1000 * 1.2436)
+        MVOL = ((1 + Humidity / 1000) * (273.15 / (273.15 + Temperature)) * (10329 + Static_Pressure) / 10329) / (0.7735 + Humidity / 1000 * 1.2436)
         return MVOL  # Round the value to 2 decimal points
 
 def TEM(Dh, Wh):   # R5
@@ -41,25 +30,24 @@ def TEM(Dh, Wh):   # R5
     C = -Dh / 1000
     Delta = B ** 2 - 4 * A * C
     TEM = (-B + Delta ** 0.5) / 2 / A
-    return round(TEM,1)
+    return TEM
+Pressure_Pa_To_mmWC = lambda pressure : pressure / 9.80638278
+StuccoToGypsum =  lambda Hemihydrate, AIII, AII :1 + Hemihydrate * 1.5 * 18.0153 / 145.148 + (AIII + AII) * 2 * 18.0153 / 136.138
+CS = lambda Ts,Wh : 1000 * (((0.0068 * Ts + 0.0000006 * (Ts ** 2)) / 28.96) + (Wh / 1000) * ((0.0081 * Ts + 0.0000029 * (Ts**2)) / 18.02)) 
+Energy_KJ_To_Kcal = lambda Energy :  Energy / 4.184
+SIGMA = lambda : 5.670367 * 10 ** (-8)
+CL = lambda Ts :  (746.2325 - 0.5466 * (Ts + 273.15))
+DGA = lambda T :685 + 28.3 * (273.15 + T) - 0.0215 * (273.15 + T) ** 2
+DPG = lambda T : 297 + 16.67 * (273.15 + T) - 0.0075 * (273.15 + T) ** 2
+CSV = lambda  T1,T2: 1000 * (0.0081 * T1 + 0.0000029 * (T1 ** 2) - 0.0081 * T2 - 0.0000029 * (T2 ** 2)) / 18.02
+SHSolid = lambda T,MG,MP,MA,MI,MW : SHG(T) / 172.171 * MG + SHP(T) / 145.148 * MP + SHA(T) / 136.138 * MA + SHImpurities(T) / 172.171 * MI + SHW(T) / 18.0153 * MW
+SHG = lambda T: 21.84 * T + 0.076 * (T ** 2 / 2 + 273.15 * T)
+SHP = lambda T : 11.48 * T + 0.061 * (T ** 2 / 2 + 273.15 * T)
+SHA = lambda T:  14.01 * T + 0.033 * (T ** 2 / 2 + 273.15 * T)
+SHImpurities = lambda T : 21.84 * T + 0.076 * (T ** 2 / 2 + 273.15 * T)
+SHW = lambda T : MWwater() * T
 
 
-MWgypsum = lambda : 172.171
-MWhemihydrate = lambda : 145.148
-MWanhydrite = lambda : 136.138
-MWimpurities = lambda : 172.171
-MWwater = lambda : 18.0153
-
-
-
-
-AIR_INGRESS_FILTER= 0
-AIR_INGRESS_MILL  = 0
-FUEL_PROPERTIES_DENSITY = 0.78
-FUEL_PROPERTIES_COMBUSTION_WATER = 1.61
-FUEL_PROPERTIES_GAS_CALORIFIC_VALUE_HHV = 9542
-AMBIENT_HUMIDITY = 7
-ABSOLUTE_PRESSURE = 1013
 AMBIENT_TEMPERATURE = 17
 COMBUSTION_AIR_TEMPERATURE = 55
 COMBUSTION_AIR_VOLUMETRIC_FLOW = 5
@@ -67,7 +55,7 @@ COMBUSTION_TEMPERATURE = 16
 SYSTEM_FAN_HEAT_RELEASE = 10
 RECIRCULATION_AIR_VOLMETRIC_FLOW = 9.5
 GYPSUM_PURITY= 85.0
-GYPSUM_MOISTURE= 0.5
+GYPSUM_MOISTURE= 0.53 #3
 HH=72
 AIII = 7.8
 AII = 0
@@ -80,7 +68,6 @@ CALCINATION_TEMPERATURE= 159
 RECIRCULATION_AIR_VOLUMETRIC_FLOW = 9.5
 WALL_LOSSES_FROM_BURNER_TO_CP_OUTLET_TEMPERATURE = 80
 WALL_LOSSES_FROM_BURNER_TO_CP_OUTLET_WALL_SURFACE =50
-
 
 def DISSOCIATION_water(): #DEFINED COMPLEATLY #I34
     return OUTPUT_MATERIAL_dry_flow()*(0.01*HH/MWhemihydrate()*1.5 + 0.01*(AIII+AII)/MWanhydrite()*2 + AIII_BACK_CONVERSTION_CONVERSION_RATIO/(1-AIII_BACK_CONVERSTION_CONVERSION_RATIO)*0.01*AIII/MWanhydrite()*0.5)*MWwater()
@@ -102,54 +89,33 @@ def INPUT_MATERIAL_liquid_water_flow(): #DEFINED COMPLEATLY - F32
 
 
 
-
-
-HUMIDITY = 335
-recirculated_air_temp = 154.8
+HUMIDITY = 0
+recirculated_air_temp = 0
 recirculation_air_density = MVOL(recirculated_air_temp,HUMIDITY,Pressure_Pa_To_mmWC(100*ABSOLUTE_PRESSURE-101325))
 recirculation_air_dry_flow = RECIRCULATION_AIR_VOLMETRIC_FLOW*recirculation_air_density/(1+HUMIDITY/1000)
 recirculated_air_energy_flow = CS(recirculated_air_temp,HUMIDITY)*recirculation_air_dry_flow
-#GAS_FLOW = 651
+#GAS_FLOW = 0
  
-testvalue = 0
 
-Aiii_back_conversion_heat_release = 0.01    # helps to find the intial gass flow
-flow_after_filter_energy = 0.100  # helps to find the intial gass flow
-In_leakage_in_filter_area_energy_flow =.100 # helps to find the intial gass flow
-input_material_energy_flow = 0.100# helps to find the intial gass flow
-stack_energy_flow = 0.100  # helps to find the intial gass flow
- 
-energy_Error = 1000
-dry_flow_Error = 1000
-water_Errors = 1000
-energy_error_converged = None
-dry_flow_error_converged = None
-water_flow_error_converged = None
+Aiii_back_conversion_heat_release = .000001      # helps to find the intial gas flow
+output_material_energy_flow = .000001    # helps to find the intial gas flow
+In_leakage_in_filter_area_energy_flow =.000001  # helps to find the intial gas flow
+input_material_energy_flow = .000001  # helps to find the intial gas flow
+stack_energy_flow = 0.000001  # helps to find the intial gas flow
 
-list_tem1 = []
-list_tem2 = []
-list_tem3 = []
-list_tem4 = []
-list_tem5 = []
-list_tem6 = []
-# 
-
-while(energy_Error !=0 and  dry_flow_Error != 0 or  water_Errors != 0):
-    does_loop_finished = 0   # varibale that keeps track of Happening of the This Loop
-    
-
-    varable_energy_error = energy_Error
-    varable_dry_error = dry_flow_Error
-    varable_water_error = water_Errors
-
+i = 0
+energy_Error = 1
+dry_flow_Error = 1
+water_Error = 1
+while ((energy_Error != 0 or dry_flow_Error != 0 or water_Error != 0) and (i <= 100)) :
     ''' Combustion Air '''
-    combustion_air_density=  MVOL(COMBUSTION_AIR_TEMPERATURE,AMBIENT_HUMIDITY,Pressure_Pa_To_mmWC(100*ABSOLUTE_PRESSURE-101325))  #tested
+    combustion_air_density =  MVOL(COMBUSTION_AIR_TEMPERATURE,AMBIENT_HUMIDITY,Pressure_Pa_To_mmWC(100*ABSOLUTE_PRESSURE-101325))  #tested
     combustion_air_temp = COMBUSTION_AIR_TEMPERATURE
     combustion_air_dry_flow =  COMBUSTION_AIR_VOLUMETRIC_FLOW*combustion_air_density/(1+AMBIENT_HUMIDITY/1000)
     combustion_air_humidity  = AMBIENT_HUMIDITY
     combustion_air_energy_flow  = CS(combustion_air_temp,combustion_air_humidity)*combustion_air_dry_flow
 
-    """Air entrailment"""
+    """Air entrainment"""
 
     air_entrainment_energy_flow = CS(AMBIENT_TEMPERATURE,AMBIENT_HUMIDITY)*AIR_INGRESS_MILL
 
@@ -171,11 +137,10 @@ while(energy_Error !=0 and  dry_flow_Error != 0 or  water_Errors != 0):
     ''' Combustion '''
     
 
-    combustion_gas_flow_NM3_H = (((dissociation_dehydration+dissociation_evaporation+drying_evaporation-Aiii_back_conversion_heat_release)+(flow_after_filter_energy)+(wall_losses_from_burner_to_CP_outlet_losses+wall_losses_from_cp_outlet_to_filter_outlet_losses)+(stack_energy_flow))-(input_material_energy_flow+(air_entrainment_energy_flow+In_leakage_in_filter_area_energy_flow)+(combustion_air_energy_flow)+(SYSTEM_FAN_HEAT_RELEASE)))*3600/((FUEL_PROPERTIES_GAS_CALORIFIC_VALUE_HHV*0.901)/860)/860
+    combustion_gas_flow_NM3_H = (((dissociation_dehydration+dissociation_evaporation+drying_evaporation-Aiii_back_conversion_heat_release)+(output_material_energy_flow)+(wall_losses_from_burner_to_CP_outlet_losses+wall_losses_from_cp_outlet_to_filter_outlet_losses)+(stack_energy_flow))-(input_material_energy_flow+(air_entrainment_energy_flow+In_leakage_in_filter_area_energy_flow)+(combustion_air_energy_flow)+(SYSTEM_FAN_HEAT_RELEASE)))*3600/((FUEL_PROPERTIES_GAS_CALORIFIC_VALUE_HHV*0.901)/860)/860
     #combustion_gas_flow_NM3_H = 500
     combustion_temperature = COMBUSTION_TEMPERATURE
     combustion_conversion_efficiency = 1             # Constant
-    combustion_gas_flow_kg_s = combustion_gas_flow_NM3_H*FUEL_PROPERTIES_DENSITY/3600
     combustion_gas_flow_kg_s = combustion_gas_flow_NM3_H*FUEL_PROPERTIES_DENSITY/3600
     combustion_generated_water = combustion_gas_flow_NM3_H*FUEL_PROPERTIES_COMBUSTION_WATER/3600
     combustion_combustion_power =  (860*combustion_gas_flow_NM3_H*((FUEL_PROPERTIES_GAS_CALORIFIC_VALUE_HHV*0.901)/860))/3600
@@ -234,11 +199,11 @@ while(energy_Error !=0 and  dry_flow_Error != 0 or  water_Errors != 0):
     In_leakage_in_filter_area_density =  MVOL(In_leakage_in_filter_area_temperature,In_leakage_in_filter_area_humidity,Pressure_Pa_To_mmWC(100*ABSOLUTE_PRESSURE-101325))
     In_leakage_in_filter_area_volmetric_flow =  AIR_INGRESS_FILTER*(1+In_leakage_in_filter_area_humidity/1000)/In_leakage_in_filter_area_density
     In_leakage_in_filter_area_energy_flow = CS(AMBIENT_TEMPERATURE,In_leakage_in_filter_area_humidity)*AIR_INGRESS_FILTER
-   
+
     """ Flow After Filter """
     flow_after_filter_dry_flow = mill_output_flow_dry_flow + AIR_INGRESS_FILTER
     flow_after_filter_humidity = (mill_output_flow_humidity*mill_output_flow_dry_flow+In_leakage_in_filter_area_humidity*AIR_INGRESS_FILTER - 1000*Aiii_back_conversion_recombined_water)/flow_after_filter_dry_flow
-    flow_after_filter_temperature = InvSHMixture(mill_output_flow_energy_flow+input_material_energy_flow+material_after_calciner_energy_flow+Aiii_back_conversion_heat_release-wall_losses_from_cp_outlet_to_filter_outlet_losses,flow_after_filter_dry_flow,flow_after_filter_humidity,0.01*dh*OUTPUT_MATERIAL_dry_flow(), 0.01*HH*OUTPUT_MATERIAL_dry_flow(), 0.01*(AIII + AII)*OUTPUT_MATERIAL_dry_flow(), 0.01*stucco_impurities*OUTPUT_MATERIAL_dry_flow(), OUTPUT_MATERIAL_liquid_water_flow())
+    flow_after_filter_temperature = InvSHMixture(mill_output_flow_energy_flow+In_leakage_in_filter_area_energy_flow+material_after_calciner_energy_flow+Aiii_back_conversion_heat_release-wall_losses_from_cp_outlet_to_filter_outlet_losses,flow_after_filter_dry_flow,flow_after_filter_humidity,0.01*dh*OUTPUT_MATERIAL_dry_flow(), 0.01*HH*OUTPUT_MATERIAL_dry_flow(), 0.01*(AIII + AII)*OUTPUT_MATERIAL_dry_flow(), 0.01*stucco_impurities*OUTPUT_MATERIAL_dry_flow(), OUTPUT_MATERIAL_liquid_water_flow())
     flow_after_filter_density =  MVOL(flow_after_filter_temperature,flow_after_filter_humidity,Pressure_Pa_To_mmWC(100*ABSOLUTE_PRESSURE-101325))
     flow_after_filter_volumetric_flow = flow_after_filter_dry_flow*(1+flow_after_filter_humidity/1000)/flow_after_filter_density
     flow_after_filter_energy =  CS(flow_after_filter_temperature,flow_after_filter_humidity)*flow_after_filter_dry_flow
@@ -265,7 +230,7 @@ while(energy_Error !=0 and  dry_flow_Error != 0 or  water_Errors != 0):
     stack_density =  MVOL(stack_dry_flow,stack_humidity,Pressure_Pa_To_mmWC(100*ABSOLUTE_PRESSURE-101325))
     stack_volM_flow = stack_dry_flow*(1+stack_humidity/1000)/stack_density
     stack_energy_flow = flow_after_filter_energy + SYSTEM_FAN_HEAT_RELEASE - recirculated_air_energy_flow
-  
+
     """ Recirculation Humidity """
     recirculation_percentage  =  100* recirculation_air_dry_flow /flow_after_filter_dry_flow
 
@@ -277,21 +242,18 @@ while(energy_Error !=0 and  dry_flow_Error != 0 or  water_Errors != 0):
     recirculated_air_energy_flow = CS(recirculated_air_temp,HUMIDITY)*recirculation_air_dry_flow
 
     """ Gass Flow"""
-    combustion_gas_flow_NM3_H = (((dissociation_dehydration+dissociation_evaporation+drying_evaporation-Aiii_back_conversion_heat_release)+(flow_after_filter_energy)+(wall_losses_from_burner_to_CP_outlet_losses+wall_losses_from_cp_outlet_to_filter_outlet_losses)+(stack_energy_flow))-(input_material_energy_flow+(air_entrainment_energy_flow+In_leakage_in_filter_area_energy_flow)+(combustion_air_energy_flow)+(SYSTEM_FAN_HEAT_RELEASE)))*3600/((FUEL_PROPERTIES_GAS_CALORIFIC_VALUE_HHV*0.901)/860)/860
+    GAS_FLOW = (((dissociation_dehydration+dissociation_evaporation+drying_evaporation-Aiii_back_conversion_heat_release)+(output_material_energy_flow)+(wall_losses_from_burner_to_CP_outlet_losses+wall_losses_from_cp_outlet_to_filter_outlet_losses)+(stack_energy_flow))-(input_material_energy_flow+(air_entrainment_energy_flow+In_leakage_in_filter_area_energy_flow)+(combustion_air_energy_flow)+(SYSTEM_FAN_HEAT_RELEASE)))*3600/((FUEL_PROPERTIES_GAS_CALORIFIC_VALUE_HHV*0.901)/860)/860
     
     """ Model Convergence """
     #Energy Inputs
     energy_inputs = input_material_energy_flow+(air_entrainment_energy_flow+In_leakage_in_filter_area_energy_flow)+(combustion_combustion_power+combustion_air_energy_flow) + (SYSTEM_FAN_HEAT_RELEASE)
-
     #Energy Outputs
-    energy_outputs = (dissociation_dehydration+dissociation_evaporation+bridge_flow_temp-Aiii_back_conversion_heat_release) + (output_material_energy_flow) + (wall_losses_from_burner_to_CP_outlet_losses+wall_losses_from_cp_outlet_to_filter_outlet_losses) + (stack_energy_flow)
-    
+    energy_outputs = (dissociation_dehydration+dissociation_evaporation+drying_evaporation-Aiii_back_conversion_heat_release) + (output_material_energy_flow) + (wall_losses_from_burner_to_CP_outlet_losses+wall_losses_from_cp_outlet_to_filter_outlet_losses) + (stack_energy_flow)
+
     #Dry Flow Inputs 
     dry_flow_inputs = (combustion_gas_flow_kg_s+combustion_air_dry_flow-combustion_generated_water)+(AIR_INGRESS_MILL+AIR_INGRESS_FILTER)
-    list_tem1.append(dry_flow_inputs)
     #Dry Flow Outputs
     dry_flow_outputs = stack_dry_flow
-    list_tem2.append(dry_flow_outputs)
     #Water Inputs
     water_iputs =  (combustion_generated_water+AMBIENT_HUMIDITY*combustion_air_dry_flow/1000)+(AMBIENT_HUMIDITY*AIR_INGRESS_MILL/1000+In_leakage_in_filter_area_humidity*AIR_INGRESS_FILTER/1000)+input_material_liquid_flow+(dissociation_water-Aiii_back_conversion_recombined_water)
     #Water Outputs
@@ -301,30 +263,6 @@ while(energy_Error !=0 and  dry_flow_Error != 0 or  water_Errors != 0):
     energy_Error =  round(100*(energy_inputs-energy_outputs)/energy_inputs)
     dry_flow_Error = round(100*(dry_flow_inputs-dry_flow_outputs)/dry_flow_inputs)
     water_Errors = round(100*(water_iputs-water_outputs)/water_iputs)
-    testvalue = testvalue +1
-    #print (Aiii_back_conversion_heat_release)
-
-
-
-    
-    rslt = {  
-        "Air Density": round(recirculation_air_density,2) ,
-        "Temperature": round(recirculated_air_temp),
-        "Dry Flow": round(recirculation_air_dry_flow,2),
-        "Humidity": round(HUMIDITY),
-        "Energy" : round(recirculated_air_energy_flow),
-        "Gas Flow": round(combustion_gas_flow_NM3_H),
-        "Energy Error": round(energy_Error),
-        "Dry Flow Error": round(dry_flow_Error),
-        " Water Flow Error": round(water_Errors),
-        "#Loops": testvalue
-        }       #print the results in a Dictionary form
-
-         
-        
-else:
-        does_loop_finished = 1 # gives idea that the code existed the loop
-        #print(does_loop_finished)
-        
-print(energy_inputs,energy_outputs)
-print(rslt)
+    print( [energy_Error, dry_flow_Error, water_Errors] )
+    if(energy_Error == 0 and dry_flow_Error==0 and water_Errors==0):
+        break
