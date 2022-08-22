@@ -166,6 +166,9 @@ def Energy_Load_Solids_GR(selected_method,Gypsum_Mass_Flow_GR,Temperature_GR,Sol
         AC12 = (AB12*(136/172))
         AC13 = (AB13*(136/172))
 
+
+        
+
         AE11 = (((AC11*1000/3600)*1000/145)*4.1)*4.184
         AE12 = (((AC12*1000/3600)*1000/136)*6.99)*4.184
         AE13 = (((AC13*1000/3600)*1000/136)*3.99)*4.184
