@@ -107,7 +107,7 @@ i = 0
 energy_Error = 1
 dry_flow_Error = 1
 water_Error = 1
-while ((energy_Error != 0 or dry_flow_Error != 0 or water_Error != 0) and (i <= 100)) :
+while ((energy_Error != 0 or dry_flow_Error != 0 or water_Error != 0) ) :
     ''' Combustion Air '''
     combustion_air_density =  MVOL(COMBUSTION_AIR_TEMPERATURE,AMBIENT_HUMIDITY,Pressure_Pa_To_mmWC(100*ABSOLUTE_PRESSURE-101325))  #tested
     combustion_air_temp = COMBUSTION_AIR_TEMPERATURE
