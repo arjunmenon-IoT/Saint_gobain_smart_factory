@@ -4,13 +4,7 @@ MWanhydrite = lambda : 136.138
 MWimpurities = lambda : 172.171
 MWwater = lambda : 18.0153
 
-AIR_INGRESS_FILTER= 0
-AIR_INGRESS_MILL  = 0
-FUEL_PROPERTIES_DENSITY = 0.78
-FUEL_PROPERTIES_COMBUSTION_WATER = 1.61
-FUEL_PROPERTIES_GAS_CALORIFIC_VALUE_HHV = 9542
-AMBIENT_HUMIDITY = 7
-ABSOLUTE_PRESSURE = 1000.66 #2
+
 def InvSHMixture(Etot, Mflow, Wh, MG, MP, MA, MI, MW):
     A = (0.0006 / 28.96 + Wh * 0.0000029 / 18.02) * Mflow + 0.076 / 2 / MWgypsum() * MG + 0.061 / 2 / MWhemihydrate() * MP + 0.033 / 2 / MWanhydrite() * MA + 0.076 / 2 / MWimpurities() * MI
     B = (6.8 / 28.96 + Wh * 0.0081 / 18.02) * Mflow + (21.84 + 0.076 * 273.15) / MWgypsum() * MG + (11.48 + 0.061 * 273.15) / MWhemihydrate() * MP + (14.01 + 0.033 * 273.15) / MWanhydrite() * MA + (21.84 + 0.076 * 273.15) / MWimpurities() * MI + MWwater() / MWwater() * MW
@@ -46,9 +40,17 @@ SHP = lambda T : 11.48 * T + 0.061 * (T ** 2 / 2 + 273.15 * T)
 SHA = lambda T:  14.01 * T + 0.033 * (T ** 2 / 2 + 273.15 * T)
 SHImpurities = lambda T : 21.84 * T + 0.076 * (T ** 2 / 2 + 273.15 * T)
 SHW = lambda T : MWwater() * T
+absolute_pressure = lambda  alt :((1 - 0.000125 * alt + 0.0000000075 * (alt** 2))) *  101325 /100
 
-
-AMBIENT_TEMPERATURE = 17
+SITE_ELEVATION = 100
+AIR_INGRESS_FILTER= 0
+AIR_INGRESS_MILL  = 0
+FUEL_PROPERTIES_DENSITY = 0.78
+FUEL_PROPERTIES_COMBUSTION_WATER = 1.61
+FUEL_PROPERTIES_GAS_CALORIFIC_VALUE_HHV = 9542
+AMBIENT_HUMIDITY = 7
+ABSOLUTE_PRESSURE = absolute_pressure(SITE_ELEVATION)
+AMBIENT_TEMPERATURE =17
 COMBUSTION_AIR_TEMPERATURE = 55
 COMBUSTION_AIR_VOLUMETRIC_FLOW = 5
 COMBUSTION_TEMPERATURE = 16
