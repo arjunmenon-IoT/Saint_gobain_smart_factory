@@ -266,3 +266,6 @@ while ((energy_Error != 0 or dry_flow_Error != 0 or water_Error != 0) ) :
     print( [energy_Error, dry_flow_Error, water_Errors] )
     if(energy_Error == 0 and dry_flow_Error==0 and water_Errors==0):
         break
+
+    
+print(round(recirculation_air_density,2),round(recirculated_air_temp,1),round(recirculation_air_dry_flow,2),round (HUMIDITY),round(recirculated_air_energy_flow))
