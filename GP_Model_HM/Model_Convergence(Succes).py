@@ -1,3 +1,4 @@
+
 MWgypsum = lambda : 172.171
 MWhemihydrate = lambda : 145.148
 MWanhydrite = lambda : 136.138
@@ -265,9 +266,22 @@ while ((energy_Error != 0 or dry_flow_Error != 0 or water_Error != 0) ) :
     energy_Error =  round(100*(energy_inputs-energy_outputs)/energy_inputs)
     dry_flow_Error = round(100*(dry_flow_inputs-dry_flow_outputs)/dry_flow_inputs)
     water_Errors = round(100*(water_iputs-water_outputs)/water_iputs)
-    print( [energy_Error, dry_flow_Error, water_Errors] )
+   # print( [energy_Error, dry_flow_Error, water_Errors] )
     if(energy_Error == 0 and dry_flow_Error==0 and water_Errors==0):
         break
 
-    
-print(round(recirculation_air_density,2),round(recirculated_air_temp,1),round(recirculation_air_dry_flow,2),round (HUMIDITY),round(recirculated_air_energy_flow))
+
+
+TAG_HUMIDITY = 400
+TAG_GAS_FLOW = 600
+optimised = False
+while (optimised == False):
+        while(HUMIDITY!=TAG_HUMIDITY):
+                AIR_INGRESS_FILTER= AIR_INGRESS_FILTER+ 1
+        while (TAG_GAS_FLOW!=GAS_FLOW):
+                AIR_INGRESS_MILL = AIR_INGRESS_MILL+ 1
+                AIR_INGRESS_FILTER = AIR_INGRESS_FILTER- AIR_INGRESS_MILL
+        optimised==True
+
+
+print(round(recirculation_air_density,2),round(recirculated_air_temp,1),round(recirculation_air_dry_flow,2),round (HUMIDITY),round(recirculated_air_energy_flow),round(GAS_FLOW),round(AIR_INGRESS_MILL),round(AIR_INGRESS_FILTER))
