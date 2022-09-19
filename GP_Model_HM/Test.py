@@ -272,5 +272,14 @@ while ((energy_Error != 0 or dry_flow_Error != 0 or water_Error != 0) ) :
     optimised = False # Link to next Stage of caculation
     print( [energy_Error, dry_flow_Error, water_Errors] )
     if(energy_Error == 0 and dry_flow_Error==0 and water_Errors==0):
-        break
+                    """ Combustion Air"""
+                    combustion_air_density_path = "[default]Toronto/HeatMassModule/CombustionAir/airdensity"
+                    combustion_air_temp_path = "[default]Toronto/HeatMassModule/CombustionAir/airTemp"
+                    combustion_air_dry_flow_path = "[default]Toronto/HeatMassModule/CombustionAir/airDryFlow"
+                    combustion_air_humidity_path = "[default]Toronto/HeatMassModule/CombustionAir/airHumidity"
+                    combustion_air_energy_flow_path = "[default]Toronto/HeatMassModule/CombustionAir/airEnergyFlow"
+                    combustion_air_volumetric_flow_path= "[default]Toronto/HeatMassModule/CombustionAir/airVolmFlow"
 
+                    paths = [combustion_air_density_path,combustion_air_temp_path,combustion_air_dry_flow_path,combustion_air_humidity_path,combustion_air_volumetric_flow_path,combustion_air_energy_flow_path]
+                    values = [combustion_air_density,combustion_air_temp,combustion_air_dry_flow,combustion_air_humidity,COMBUSTION_AIR_VOLUMETRIC_FLOW,combustion_air_energy_flow]
+                    system.tag.writeAsync(paths, values)

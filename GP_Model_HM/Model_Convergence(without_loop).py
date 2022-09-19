@@ -1,8 +1,3 @@
-from ast import If
-from random import randint, random
-from unittest import result
-from sqlalchemy import false, true
-
 
 SHG = lambda T: 21.84 * T + 0.076 * (T ** 2 / 2 + 273.15 * T)
 SHP = lambda T : 11.48 * T + 0.061 * (T ** 2 / 2 + 273.15 * T)
