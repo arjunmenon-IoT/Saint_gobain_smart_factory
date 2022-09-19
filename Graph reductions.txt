@@ -1,0 +1,28 @@
+A = MVOL( R30,X,Pressure_Pa_To_mmWC(100*(EF)-101325))
+B= MVOL((DE),T,Pressure_Pa_To_mmWC(100*(EF)-101325))/(1+T/1000)
+
+
+
+X = X
+P = Recirculation_Air_Volumetric_Flow
+Q = Gas_Flow
+R =Fuel_Property_Combustion_Water
+S = Combustion_Air_Volumetric_Flow
+T =Ambient_Humidity
+U = Fuel_property_Density
+V = V
+W =Moisture
+Y = Stucco_Flow
+M =HH
+N = AIII
+O =AII
+AB = AIII_back_conversion_Converstional_Ratio
+BD = (BD)
+DE = Combustion_Air_Temp
+EF = Ambient_Absolute_Pressure
+FG = Gypsum_Moisture
+GH = (GH)
+HI =(HI)
+
+def R30((HI),X,V,(BD),(GH),L41) :
+     return R30 = TEM(((CS((HI),X)*L41+V+ (BD)))+(GH))/( (L41)+V+(BD)),X)

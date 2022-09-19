@@ -1,0 +1,2 @@
+def 
+p00 + p10*mill + p01*filtr + p20*mill**2 + p11*mill*filtr + p02*filtr**2 + p30*mill**3 + p21*mill**2*filtr + p12*mill*filtr**2 + p03*filtr**3 + p40*mill**4 + p31*mill**3*filtr + p22*mill**2*filtr**2 + p13*mill*filtr**3 + p04*filtr**4 + p50*mill**5 + p41*mill**4*filtr + p32*mill**3*filtr**2 + p23*mill**2*filtr**3 + p14*mill*filtr**4 + p05*filtr**5
