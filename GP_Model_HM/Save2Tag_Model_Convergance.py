@@ -270,8 +270,9 @@ while ((energy_Error != 0 or dry_flow_Error != 0 or water_Error != 0) ) :
     dry_flow_Error = round(100*(dry_flow_inputs-dry_flow_outputs)/dry_flow_inputs)
     water_Errors = round(100*(water_iputs-water_outputs)/water_iputs)
     optimised = False # Link to next Stage of caculation
-    print( [energy_Error, dry_flow_Error, water_Errors] )
+    #print( [energy_Error, dry_flow_Error, water_Errors] )
     if(energy_Error == 0 and dry_flow_Error==0 and water_Errors==0):
+                    #print( [energy_Error, dry_flow_Error, water_Errors] )
                     """ Combustion Air"""
                     combustion_air_density_path = "[default]Toronto/HeatMassModule/CombustionAir/airdensity"
                     combustion_air_temp_path = "[default]Toronto/HeatMassModule/CombustionAir/airTemp"
@@ -280,6 +281,76 @@ while ((energy_Error != 0 or dry_flow_Error != 0 or water_Error != 0) ) :
                     combustion_air_energy_flow_path = "[default]Toronto/HeatMassModule/CombustionAir/airEnergyFlow"
                     combustion_air_volumetric_flow_path= "[default]Toronto/HeatMassModule/CombustionAir/airVolmFlow"
 
-                    paths = [combustion_air_density_path,combustion_air_temp_path,combustion_air_dry_flow_path,combustion_air_humidity_path,combustion_air_volumetric_flow_path,combustion_air_energy_flow_path]
-                    values = [combustion_air_density,combustion_air_temp,combustion_air_dry_flow,combustion_air_humidity,COMBUSTION_AIR_VOLUMETRIC_FLOW,combustion_air_energy_flow]
-                    system.tag.writeAsync(paths, values)
+                    combustion_air_path = [combustion_air_density_path,combustion_air_temp_path,combustion_air_dry_flow_path,combustion_air_humidity_path,combustion_air_volumetric_flow_path,combustion_air_energy_flow_path]
+                    combustion_air_values = [combustion_air_density,combustion_air_temp,combustion_air_dry_flow,combustion_air_humidity,COMBUSTION_AIR_VOLUMETRIC_FLOW,combustion_air_energy_flow]
+                    system.tag.writeAsync(combustion_air_path, combustion_air_values)
+
+                    """ Air Entrailment """
+                    air_entrainment_energy_flow_path = "[default]Toronto/HeatMassModule/AirEntrainment/airEntrainmentEnergyFlow"
+                    system.tag.writeAsync(air_entrainment_energy_flow_path, air_entrainment_energy_flow)
+
+                    ''' Dissociation '''
+                    dissociation_water_path = "[default]Toronto/HeatMassModule/Dissociation/dissociationWater"
+                    dissociation_dehydration_path = "[default]Toronto/HeatMassModule/Dissociation/dissociationDehydration"
+                    dissociation_evaporation_path = "[default]Toronto/HeatMassModule/Dissociation/dissociationEvaporation"
+
+                    dissociation_path = [dissociation_water_path,dissociation_dehydration_path,dissociation_evaporation_path]
+                    dissociation_values = [dissociation_water,dissociation_dehydration,dissociation_evaporation]
+                    system.tag.writeAsync(dissociation_path, dissociation_values)
+
+                    """ bridge flow"""
+
+                    bridge_flow_dry_flow_paths  = "[default]Toronto/HeatMassModule/bridgeFlow/bridgeFlowDryFlow"
+                    bridge_flow_energy_flow_paths = "[default]Toronto/HeatMassModule/bridgeFlow/bridgeFlowEnergyFlow"
+                    bridge_flow_humidity_paths  = "[default]Toronto/HeatMassModule/bridgeFlow/bridgeFlowHumidity"
+                    bridge_flow_temp_paths     = "[default]Toronto/HeatMassModule/bridgeFlow/bridgeFlowTemp"
+                    bridge_flow_density_paths   = "[default]Toronto/HeatMassModule/bridgeFlow/bridgeFlowDensity"
+
+                    bridge_flow_values_paths = [bridge_flow_dry_flow_paths,bridge_flow_energy_flow_paths,bridge_flow_humidity_paths,bridge_flow_temp_paths,bridge_flow_density_paths]
+                    bridge_flow_values = [bridge_flow_dry_flow,bridge_flow_energy_flow,bridge_flow_humidity,bridge_flow_temp,bridge_flow_density]
+                    system.tag.writeAsync(bridge_flow_values_paths, bridge_flow_values)
+
+                    
+                    '''AIII Back Conversion '''
+
+                    Aiii_back_conversion_recombined_water_path = "[default]Toronto/HeatMassModule/AIIIBackConversion/AiiiBackConversionRecombinedWater"
+                    Aiii_back_conversion_heat_release_path = "[default]Toronto/HeatMassModule/AIIIBackConversion/AiiiBackConversionHeatRelease"
+                    Aiii_back_conversion_conversion_ratio_path =  "[default]Toronto/HeatMassModule/AIIIBackConversion/AiiiBackConversionRatio"
+
+                    Aiii_back_conversion_paths = [Aiii_back_conversion_recombined_water_path,Aiii_back_conversion_heat_release_path,Aiii_back_conversion_conversion_ratio_path]
+                    Aiii_back_conversion_values = [Aiii_back_conversion_recombined_water,Aiii_back_conversion_heat_release,Aiii_back_conversion_conversion_ratio]
+                    system.tag.writeAsync(Aiii_back_conversion_paths, Aiii_back_conversion_values)
+
+                    ''' Drying '''
+                    drying_water_path = "[default]Toronto/HeatMassModule/Drying/dryingWater"
+                    drying_evaporation_path = "[default]Toronto/HeatMassModule/Drying/dryingEvaporation"
+
+                    Drying_paths = [drying_water_path,drying_evaporation_path]
+                    Drying_values = [drying_water,drying_evaporation]
+                    system.tag.writeAsync(Drying_paths, Drying_values)
+
+                    """ Flow After Filter """
+                    flow_after_filter_dry_flow_path = "[default]Toronto/HeatMassModule/FlowAfterFilter/flowAfterFilterDryFlow"
+                    flow_after_filter_humidity_path = "[default]Toronto/HeatMassModule/FlowAfterFilter/flowAfterFilterHumidity"
+                    flow_after_filter_temperature_path = "[default]Toronto/HeatMassModule/FlowAfterFilter/flowAfterFilterTemp"
+                    flow_after_filter_density_path =  "[default]Toronto/HeatMassModule/FlowAfterFilter/flowAfterFilterDensity"
+                    flow_after_filter_volumetric_flow_path = "[default]Toronto/HeatMassModule/FlowAfterFilter/flowAfterFilterVolumetricFlow"
+                    flow_after_filter_energy_path =  "[default]Toronto/HeatMassModule/FlowAfterFilter/flowAfterFilterEnergy"
+
+                    flow_after_filter_paths = [flow_after_filter_dry_flow_path,flow_after_filter_humidity_path,flow_after_filter_temperature_path,flow_after_filter_density_path,flow_after_filter_volumetric_flow_path,flow_after_filter_energy_path]
+                    flow_after_filter_values = [flow_after_filter_dry_flow,flow_after_filter_humidity,flow_after_filter_temperature,flow_after_filter_density,flow_after_filter_volumetric_flow,flow_after_filter_energy]
+                    system.tag.writeAsync(flow_after_filter_paths, flow_after_filter_values)
+
+
+
+
+
+
+
+
+
+
+
+
+
+

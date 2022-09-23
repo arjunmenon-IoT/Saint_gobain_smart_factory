@@ -119,16 +119,19 @@ dry_flow_Error = 1
 water_Error = 1
 while ((energy_Error != 0 or dry_flow_Error != 0 or water_Error != 0) ) :
 
-    ''' Vulnerability'''
+    ''' Vulnerability  for non zero Inputs'''
     if(FUEL_PROPERTIES_GAS_CALORIFIC_VALUE_HHV == 0):
         system.gui.messageBox("Gas Calorific value cannot be zero")
         exit()
     elif(COMBUSTION_AIR_VOLUMETRIC_FLOW == 0):
         system.gui.messageBox("Combustion Air Volumetric flow cannot be Zero")
         exit()
-    elif(WALL_LOSSES_FROM_CP_OUTLET_TO_FILTER_OUTLET_TEMPERATURE == 0 or WALL_LOSSES_FROM_BURNER_TO_CP_OUTLET_TEMPERATURE ==0 ):
-        system.gui.messageBox("Constants cannot be zero")
+    elif(WALL_LOSSES_FROM_CP_OUTLET_TO_FILTER_OUTLET_TEMPERATURE == 0 or WALL_LOSSES_FROM_BURNER_TO_CP_OUTLET_TEMPERATURE == 0 ):
+        system.gui.messageBox("Wall Constants cannot be zero")
         exit()
+    elif(AIII == 0 or STUCCO_FLOW == 0):
+        system.gui.messageBox("AIII or STUCCO FLOW cannot be Zero")
+
 
 
 
