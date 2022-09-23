@@ -341,6 +341,13 @@ while ((energy_Error != 0 or dry_flow_Error != 0 or water_Error != 0) ) :
                     flow_after_filter_values = [flow_after_filter_dry_flow,flow_after_filter_humidity,flow_after_filter_temperature,flow_after_filter_density,flow_after_filter_volumetric_flow,flow_after_filter_energy]
                     system.tag.writeAsync(flow_after_filter_paths, flow_after_filter_values)
 
+                    """ Gass Flow"""
+                    system.tag.writeAsync("[default]Toronto/HeatMassModule/Gass_Flow/GasFLow", GAS_FLOW)
+
+                    """ gYPSUM"""                    
+                    system.tag.writeAsync("[default]Toronto/HeatMassModule/GYPSUM/gypsumWetFlow", gypsum_wet_gypsum_flow)
+
+
 
 
 
