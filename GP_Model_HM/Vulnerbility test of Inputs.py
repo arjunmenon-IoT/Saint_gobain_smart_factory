@@ -28,6 +28,8 @@ RECIRCULATION_AIR_VOLUMETRIC_FLOW = 9.5
 WALL_LOSSES_FROM_BURNER_TO_CP_OUTLET_WALL_SURFACE =50
 
 
+from sys import exit
+
 MWgypsum = lambda : 172.171
 MWhemihydrate = lambda : 145.148
 MWanhydrite = lambda : 136.138
@@ -116,6 +118,22 @@ energy_Error = 1
 dry_flow_Error = 1
 water_Error = 1
 while ((energy_Error != 0 or dry_flow_Error != 0 or water_Error != 0) ) :
+
+    ''' Vulnerability'''
+    if(FUEL_PROPERTIES_GAS_CALORIFIC_VALUE_HHV == 0):
+        system.gui.messageBox("Gas Calorific value cannot be zero")
+        exit()
+    elif(COMBUSTION_AIR_VOLUMETRIC_FLOW == 0):
+        system.gui.messageBox("Combustion Air Volumetric flow cannot be Zero")
+        exit()
+    elif(WALL_LOSSES_FROM_CP_OUTLET_TO_FILTER_OUTLET_TEMPERATURE == 0 or WALL_LOSSES_FROM_BURNER_TO_CP_OUTLET_TEMPERATURE ==0 ):
+        system.gui.messageBox("Constants cannot be zero")
+        exit()
+
+
+
+
+
 
 
     ''' Combustion Air '''
