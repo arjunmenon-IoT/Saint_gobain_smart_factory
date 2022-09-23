@@ -1,16 +1,41 @@
+FUEL_PROPERTIES_GAS_CALORIFIC_VALUE_HHV = 9542
+COMBUSTION_AIR_VOLUMETRIC_FLOW = 5
+WALL_LOSSES_FROM_CP_OUTLET_TO_FILTER_OUTLET_TEMPERATURE = 50
+WALL_LOSSES_FROM_BURNER_TO_CP_OUTLET_TEMPERATURE = 80
+
+SITE_ELEVATION = 100
+AIR_INGRESS_FILTER= 0
+AIR_INGRESS_MILL  = 0
+FUEL_PROPERTIES_DENSITY = 0.78
+FUEL_PROPERTIES_COMBUSTION_WATER = 1.61
+AMBIENT_HUMIDITY = 7
+AMBIENT_TEMPERATURE =17
+COMBUSTION_AIR_TEMPERATURE = 55
+COMBUSTION_TEMPERATURE = 16
+SYSTEM_FAN_HEAT_RELEASE = 10
+RECIRCULATION_AIR_VOLMETRIC_FLOW = 9.5
+GYPSUM_PURITY= 85.0
+GYPSUM_MOISTURE= 0.53 #3
+HH=72
+AIII = 7.8
+AII = 0
+MOISTURE= 0
+STUCCO_FLOW = 31.00
+WALL_LOSSES_FROM_CP_OUTLET_TO_FILTER_OUTLET_WALL_SURFACE =100
+AIII_BACK_CONVERSTION_CONVERSION_RATIO = 80
+CALCINATION_TEMPERATURE= 159
+RECIRCULATION_AIR_VOLUMETRIC_FLOW = 9.5
+WALL_LOSSES_FROM_BURNER_TO_CP_OUTLET_WALL_SURFACE =50
+
+
 MWgypsum = lambda : 172.171
 MWhemihydrate = lambda : 145.148
 MWanhydrite = lambda : 136.138
 MWimpurities = lambda : 172.171
 MWwater = lambda : 18.0153
 
-AIR_INGRESS_FILTER= 0
-AIR_INGRESS_MILL  = 0
-FUEL_PROPERTIES_DENSITY = 0.78
-FUEL_PROPERTIES_COMBUSTION_WATER = 1.61
-FUEL_PROPERTIES_GAS_CALORIFIC_VALUE_HHV = 9542
-AMBIENT_HUMIDITY = 7
-ABSOLUTE_PRESSURE = 1000.66 #2
+
+
 def InvSHMixture(Etot, Mflow, Wh, MG, MP, MA, MI, MW):
     A = (0.0006 / 28.96 + Wh * 0.0000029 / 18.02) * Mflow + 0.076 / 2 / MWgypsum() * MG + 0.061 / 2 / MWhemihydrate() * MP + 0.033 / 2 / MWanhydrite() * MA + 0.076 / 2 / MWimpurities() * MI
     B = (6.8 / 28.96 + Wh * 0.0081 / 18.02) * Mflow + (21.84 + 0.076 * 273.15) / MWgypsum() * MG + (11.48 + 0.061 * 273.15) / MWhemihydrate() * MP + (14.01 + 0.033 * 273.15) / MWanhydrite() * MA + (21.84 + 0.076 * 273.15) / MWimpurities() * MI + MWwater() / MWwater() * MW
@@ -31,6 +56,10 @@ def TEM(Dh, Wh):   # R5
     Delta = B ** 2 - 4 * A * C
     TEM = (-B + Delta ** 0.5) / 2 / A
     return TEM
+
+def absolute_pressure(alt):
+        return ((1 - 0.000125 * alt + 0.0000000075 * (alt** 2))) *  101325 /100
+
 Pressure_Pa_To_mmWC = lambda pressure : pressure / 9.80638278
 StuccoToGypsum =  lambda Hemihydrate, AIII, AII :1 + Hemihydrate * 1.5 * 18.0153 / 145.148 + (AIII + AII) * 2 * 18.0153 / 136.138
 CS = lambda Ts,Wh : 1000 * (((0.0068 * Ts + 0.0000006 * (Ts ** 2)) / 28.96) + (Wh / 1000) * ((0.0081 * Ts + 0.0000029 * (Ts**2)) / 18.02)) 
@@ -47,27 +76,6 @@ SHA = lambda T:  14.01 * T + 0.033 * (T ** 2 / 2 + 273.15 * T)
 SHImpurities = lambda T : 21.84 * T + 0.076 * (T ** 2 / 2 + 273.15 * T)
 SHW = lambda T : MWwater() * T
 
-
-AMBIENT_TEMPERATURE = 17
-COMBUSTION_AIR_TEMPERATURE = 55
-COMBUSTION_AIR_VOLUMETRIC_FLOW = 5
-COMBUSTION_TEMPERATURE = 16
-SYSTEM_FAN_HEAT_RELEASE = 10
-RECIRCULATION_AIR_VOLMETRIC_FLOW = 9.5
-GYPSUM_PURITY= 85.0
-GYPSUM_MOISTURE= 0.53 #3
-HH=72
-AIII = 7.8
-AII = 0
-MOISTURE= 0
-STUCCO_FLOW = 31.00
-WALL_LOSSES_FROM_CP_OUTLET_TO_FILTER_OUTLET_TEMPERATURE = 50
-WALL_LOSSES_FROM_CP_OUTLET_TO_FILTER_OUTLET_WALL_SURFACE =100
-AIII_BACK_CONVERSTION_CONVERSION_RATIO = 80
-CALCINATION_TEMPERATURE= 159
-RECIRCULATION_AIR_VOLUMETRIC_FLOW = 9.5
-WALL_LOSSES_FROM_BURNER_TO_CP_OUTLET_TEMPERATURE = 80
-WALL_LOSSES_FROM_BURNER_TO_CP_OUTLET_WALL_SURFACE =50
 
 def DISSOCIATION_water(): #DEFINED COMPLEATLY #I34
     return OUTPUT_MATERIAL_dry_flow()*(0.01*HH/MWhemihydrate()*1.5 + 0.01*(AIII+AII)/MWanhydrite()*2 + AIII_BACK_CONVERSTION_CONVERSION_RATIO/(1-AIII_BACK_CONVERSTION_CONVERSION_RATIO)*0.01*AIII/MWanhydrite()*0.5)*MWwater()
@@ -88,7 +96,7 @@ def INPUT_MATERIAL_liquid_water_flow(): #DEFINED COMPLEATLY - F32
     return GYPSUM_wet_gypsum_flow()*(0.01*GYPSUM_MOISTURE)*1000/3600
 
 
-
+ABSOLUTE_PRESSURE = absolute_pressure(SITE_ELEVATION)
 HUMIDITY = 0
 recirculated_air_temp = 0
 recirculation_air_density = MVOL(recirculated_air_temp,HUMIDITY,Pressure_Pa_To_mmWC(100*ABSOLUTE_PRESSURE-101325))
@@ -107,7 +115,9 @@ i = 0
 energy_Error = 1
 dry_flow_Error = 1
 water_Error = 1
-while ((energy_Error != 0 or dry_flow_Error != 0 or water_Error != 0) and (i <= 100)) :
+while ((energy_Error != 0 or dry_flow_Error != 0 or water_Error != 0) ) :
+
+
     ''' Combustion Air '''
     combustion_air_density =  MVOL(COMBUSTION_AIR_TEMPERATURE,AMBIENT_HUMIDITY,Pressure_Pa_To_mmWC(100*ABSOLUTE_PRESSURE-101325))  #tested
     combustion_air_temp = COMBUSTION_AIR_TEMPERATURE
@@ -263,6 +273,8 @@ while ((energy_Error != 0 or dry_flow_Error != 0 or water_Error != 0) and (i <= 
     energy_Error =  round(100*(energy_inputs-energy_outputs)/energy_inputs)
     dry_flow_Error = round(100*(dry_flow_inputs-dry_flow_outputs)/dry_flow_inputs)
     water_Errors = round(100*(water_iputs-water_outputs)/water_iputs)
+    optimised = False # Link to next Stage of caculation
     print( [energy_Error, dry_flow_Error, water_Errors] )
     if(energy_Error == 0 and dry_flow_Error==0 and water_Errors==0):
         break
+
