@@ -347,15 +347,153 @@ while ((energy_Error != 0 or dry_flow_Error != 0 or water_Error != 0) ) :
                     """ gYPSUM"""                    
                     system.tag.writeAsync("[default]Toronto/HeatMassModule/GYPSUM/gypsumWetFlow", gypsum_wet_gypsum_flow)
 
+                    """ Input material """
+                    input_material_dry_flow_path =  "[default]Toronto/HeatMassModule/Input Material/DryFlow"
+                    input_material_liquid_flow_path = "[default]Toronto/HeatMassModule/Input Material/LiquidFlow"
+                    input_material_temp_path = "[default]Toronto/HeatMassModule/Input Material/Temperature"
+                    input_material_energy_flow_path = "[default]Toronto/HeatMassModule/Input Material/EnergyFlow"
+
+                    input_material_paths = [input_material_dry_flow_path,input_material_liquid_flow_path,input_material_temp_path,input_material_energy_flow_path]
+                    input_material_values = [input_material_dry_flow,input_material_liquid_flow,input_material_temp,input_material_energy_flow]
+                    system.tag.writeAsync(input_material_paths,input_material_values)
+
+                    ''' In-leakage in Filter Area '''
+
+                    In_leakage_in_filter_area_temperature_path =  "[default]Toronto/HeatMassModule/In-leakageInFilterArea/Temperature"
+                    In_leakage_in_filter_area_humidity_path = "[default]Toronto/HeatMassModule/In-leakageInFilterArea/Humidity"
+                    In_leakage_in_filter_area_density_path =  "[default]Toronto/HeatMassModule/In-leakageInFilterArea/Density"
+                    In_leakage_in_filter_area_volmetric_flow_path =  "[default]Toronto/HeatMassModule/In-leakageInFilterArea/VolumetricFlow"
+                    In_leakage_in_filter_area_energy_flow_path = "[default]Toronto/HeatMassModule/In-leakageInFilterArea/Energy Flow"
+                    
+                    In_leakage_in_filter_paths = [In_leakage_in_filter_area_temperature_path,In_leakage_in_filter_area_humidity_path,In_leakage_in_filter_area_density_path,In_leakage_in_filter_area_volmetric_flow_path,In_leakage_in_filter_area_energy_flow_path]
+                    In_leakage_in_filter_values = [In_leakage_in_filter_area_temperature,In_leakage_in_filter_area_humidity,In_leakage_in_filter_area_density,In_leakage_in_filter_area_volmetric_flow,In_leakage_in_filter_area_energy_flow]
+                    system.tag.writeAsync(In_leakage_in_filter_paths,In_leakage_in_filter_values)
+
+                    """ Material After Calciner """
+
+                    material_after_calciner_dry_flow = "[default]Toronto/HeatMassModule/MaterialAfterCalciner/DryFlow"
+                    material_after_calciner_liquid_flow  = "[default]Toronto/HeatMassModule/MaterialAfterCalciner/LiquidFlow"
+                    material_after_calciner_temp =  "[default]Toronto/HeatMassModule/MaterialAfterCalciner/Temperature"
+                    material_after_calciner_energy_flow = "[default]Toronto/HeatMassModule/MaterialAfterCalciner/EnergyFlow"
+                    
+                    material_after_calciner_paths = [material_after_calciner_dry_flow,material_after_calciner_liquid_flow,material_after_calciner_temp,material_after_calciner_energy_flow]
+                    material_after_calciner_values = [material_after_calciner_dry_flow,material_after_calciner_liquid_flow,material_after_calciner_temp,material_after_calciner_energy_flow]
+                    system.tag.writeAsync(material_after_calciner_paths,material_after_calciner_values)
+
+                    """ Middle State"""
+                    middle_state_humidity_path = "[default]Toronto/HeatMassModule/Middle_state/middle_state_Humidity"
+                    middle_state_temperature_path =  "[default]Toronto/HeatMassModule/Middle_state/middle_state_Temperature"
+                    middle_state_density_path =  "[default]Toronto/HeatMassModule/Middle_state/middle_state_Density"
+                    middle_state_dry_flow_path = "[default]Toronto/HeatMassModule/Middle_state/middle_state_DryFlow"
+                    middle_state_volumetric_flow_path = "[default]Toronto/HeatMassModule/Middle_state/middle_state_VolumetricFlow"
+                    middle_state_energy_flow_path = "[default]Toronto/HeatMassModule/Middle_state/middle_state_EnergyFlow"
+
+                    middle_state_paths = [middle_state_humidity_path,middle_state_temperature_path,middle_state_density_path,middle_state_dry_flow_path,middle_state_volumetric_flow_path,middle_state_energy_flow_path]
+                    middle_state_values = [middle_state_humidity,middle_state_temperature,middle_state_density,middle_state_dry_flow,middle_state_volumetric_flow,middle_state_energy_flow]
+                    system.tag.writeAsync(middle_state_paths,middle_state_values)
+
+                    """ Mill oulet FLow """
+
+                    mill_output_flow_temperature_path = "[default]Toronto/HeatMassModule/MillOuletFLow/mill_output_flow_temperature"
+                    mill_output_flow_dry_flow_path = "[default]Toronto/HeatMassModule/MillOuletFLow/mill_output_flow_dry_flow"
+                    mill_output_flow_humidity_path = "[default]Toronto/HeatMassModule/MillOuletFLow/mill_output_flow_humidity"
+                    mill_output_flow_density_path = "[default]Toronto/HeatMassModule/MillOuletFLow/mill_output_flow_density"
+                    mill_output_flow_volmetric_flow_path = "[default]Toronto/HeatMassModule/MillOuletFLow/mill_output_flow_volmetric_flow"
+                    mill_output_flow_energy_flow_path = "[default]Toronto/HeatMassModule/MillOuletFLow/mill_output_flow_energy_flow"
+                    
+                    mill_output_flow_paths = [mill_output_flow_temperature_path,mill_output_flow_dry_flow_path,mill_output_flow_humidity_path,mill_output_flow_density_path,mill_output_flow_volmetric_flow_path,mill_output_flow_energy_flow_path]
+                    mill_output_flow_values = [mill_output_flow_temperature,mill_output_flow_dry_flow,mill_output_flow_humidity,mill_output_flow_density,mill_output_flow_volmetric_flow,mill_output_flow_energy_flow]
+                    system.tag.writeAsync(mill_output_flow_paths,mill_output_flow_values)
+
+                        
+                    """ Model Convergence """
+                
+                    energy_inputs_path = "[default]Toronto/HeatMassModule/Model_Convergence/EnergyInput"
+                    energy_outputs_path = "[default]Toronto/HeatMassModule/Model_Convergence/EnergyOutput"
+                    dry_flow_inputs_path = "[default]Toronto/HeatMassModule/Model_Convergence/DryFlowInputs"
+                    dry_flow_outputs_path = "[default]Toronto/HeatMassModule/Model_Convergence/DryFlowOutputs"
+                    water_iputs_path =  "[default]Toronto/HeatMassModule/Model_Convergence/WaterInputs"
+                    water_outputs_path =  "[default]Toronto/HeatMassModule/Model_Convergence/WaterOutputs"
+                    energy_Error_path =  "[default]Toronto/HeatMassModule/Model_Convergence/EnergyError"
+                    dry_flow_Error_path = "[default]Toronto/HeatMassModule/Model_Convergence/DryFlowError"
+                    water_Errors_path = "[default]Toronto/HeatMassModule/Model_Convergence/WaterError"
+
+                    model_convergence_paths = [energy_inputs_path,energy_outputs_path,dry_flow_inputs_path,dry_flow_outputs_path,water_iputs_path,water_outputs_path,energy_Error_path,dry_flow_Error_path,water_Errors_path]
+                    model_convergence_values = [energy_inputs,energy_outputs,dry_flow_inputs,dry_flow_outputs,water_iputs,water_outputs,energy_Error,dry_flow_Error,water_Errors]
+                    system.tag.writeAsync(model_convergence_paths,model_convergence_values)
+
+                    """Output_material """
+                    output_material_dry_flow_path ="[default]Toronto/HeatMassModule/Output_material/output_material_dry_flow"
+                    output_material_liquid_flow_path = "[default]Toronto/HeatMassModule/Output_material/output_material_Liquid_flow"
+                    output_material_temperature_path  = "[default]Toronto/HeatMassModule/Output_material/output_material_Temperature"
+                    output_material_energy_flow_path = "[default]Toronto/HeatMassModule/Output_material/output_material_Energy_flow"
+
+                    output_material_paths = [output_material_dry_flow_path,output_material_liquid_flow_path,output_material_temperature_path,output_material_energy_flow_path]
+                    output_material_values = [output_material_dry_flow,output_material_liquid_flow,output_material_temperature,output_material_energy_flow]
+
+                    system.tag.writeAsync(output_material_paths,output_material_values)
+
+                    '''  Output Material Input '''
+
+                    stucco_impurities_path = "[default]Toronto/HeatMassModule/OutputMaterialInput/stucco_impurities"
+                    dh_path =  "[default]Toronto/HeatMassModule/OutputMaterialInput/dh"
+
+                    output_material_input_paths = [stucco_impurities_path,dh_path]
+                    output_material_input_values = [stucco_impurities,dh]
+                    system.tag.writeAsync(output_material_input_paths,output_material_input_values)
+
+                    """ Recirculation Air""" 
+                    HUMIDITY_path = "[default]Toronto/HeatMassModule/Recirculation_Air/recirculated_air_Humidity"
+                    recirculated_air_temp_path = "[default]Toronto/HeatMassModule/Recirculation_Air/recirculated_air_temp"
+                    recirculation_air_density_path = "[default]Toronto/HeatMassModule/Recirculation_Air/recirculated_air_density"
+                    recirculation_air_dry_flow_path = "[default]Toronto/HeatMassModule/Recirculation_Air/recirculated_air_dry_flow"
+                    recirculated_air_energy_flow_path = "[default]Toronto/HeatMassModule/Recirculation_Air/recirculated_air_energy_flow"
+                    recirculated_air_paths = [HUMIDITY_path,recirculated_air_temp_path,recirculation_air_density_path,recirculation_air_dry_flow_path,recirculated_air_energy_flow_path]
+                    recirculated_air_values = [HUMIDITY,recirculated_air_temp,recirculation_air_density,recirculation_air_dry_flow,recirculated_air_energy_flow]
+                    system.tag.writeAsync(recirculated_air_paths,recirculated_air_values)
+
+
+                    """ Recirculation Humidity """
+                    recirculation_percentage_path  =  "[default]Toronto/HeatMassModule/RecirculationHumidity_Percentage/recirculation_percentage"
+                    recirculation_percentage_value = recirculation_percentage
+
+                    recirculation_percentage_paths = [recirculation_percentage_path]
+                    recirculation_percentage_values = [recirculation_percentage_value]
+                    system.tag.writeAsync(recirculation_percentage_paths,recirculation_percentage_values)
+
+                    """ Stack """
+    
+                    stack_temp_path = "[default]Toronto/HeatMassModule/Stack/stack_temp"
+                    stack_humidity_path =  "[default]Toronto/HeatMassModule/Stack/stack_humidity"
+                    stack_dry_flow_path = "[default]Toronto/HeatMassModule/Stack/stack_dry_flow"
+                    stack_density_path =  "[default]Toronto/HeatMassModule/Stack/stack_density"
+                    stack_volM_flow_path = "[default]Toronto/HeatMassModule/Stack/stack_volum_flow"
+                    stack_energy_flow_path = "[default]Toronto/HeatMassModule/Stack/stack_energy_flow"
+                    stack_paths =  [stack_temp_path,stack_humidity_path,stack_dry_flow_path,stack_density_path,stack_volM_flow_path,stack_energy_flow_path]
+                    stack_values = [stack_temp,stack_humidity,stack_dry_flow,stack_density,stack_volM_flow,stack_energy_flow]
+                    system.tag.writeAsync(stack_paths,stack_values)
+
+                    ''' Wall Losses from burner to cp outlet'''
+                    wall_losses_from_burner_to_CP_outlet_losses_path = "[default]Toronto/HeatMassModule/WallLossesFromBurnertoCPoutlet/loss_burner_cp"
+                    wall_losses_from_burner_to_CP_outlet_losses_value =  wall_losses_from_burner_to_CP_outlet_losses
+
+                    losses_burner_cp_paths = [wall_losses_from_burner_to_CP_outlet_losses_path]
+                    losses_burner_cp_values = [wall_losses_from_burner_to_CP_outlet_losses_value]
+
+                    system.tag.writeAsync(losses_burner_cp_paths,losses_burner_cp_values)
+
+                    ''' Wall Losses from cp to filter outlet'''
+                    wall_losses_from_cp_outlet_to_filter_outlet_losses_path = "[default]Toronto/HeatMassModule/WallLossesFromCPtoFilterOutlet/loss_cp_burner"
+                    wall_losses_from_cp_outlet_to_filter_outlet_losses_value = wall_losses_from_cp_outlet_to_filter_outlet_losses
+
+                    losses_cp_burenr_paths = [wall_losses_from_cp_outlet_to_filter_outlet_losses_path]
+                    losses_cp_burenr_values = [wall_losses_from_cp_outlet_to_filter_outlet_losses_value]
+
+                    system.tag.writeAsync(losses_cp_burenr_paths,losses_cp_burenr_values)
 
 
 
-
-
-
-
-
-
+                    
 
 
 

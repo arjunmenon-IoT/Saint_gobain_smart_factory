@@ -272,5 +272,6 @@ while ((energy_Error != 0 or dry_flow_Error != 0 or water_Error != 0) ) :
     optimised = False # Link to next Stage of caculation
     print( [energy_Error, dry_flow_Error, water_Errors] )
     if(energy_Error == 0 and dry_flow_Error==0 and water_Errors==0):
+        print(HUMIDITY,GAS_FLOW)
         break
 
