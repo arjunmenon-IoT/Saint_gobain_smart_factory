@@ -131,10 +131,35 @@ while ((energy_Error != 0 or dry_flow_Error != 0 or water_Error != 0) ) :
         exit()
     elif(AIII == 0 or STUCCO_FLOW == 0):
         system.gui.messageBox("AIII or STUCCO FLOW cannot be Zero")
+        exit()
 
+    ''' Vulnerability  for  0 to 100 '''
+    zeroTohundred = [FUEL_PROPERTIES_DENSITY,FUEL_PROPERTIES_COMBUSTION_WATER,AMBIENT_HUMIDITY,COMBUSTION_TEMPERATURE,SYSTEM_FAN_HEAT_RELEASE,RECIRCULATION_AIR_VOLMETRIC_FLOW,GYPSUM_PURITY,GYPSUM_MOISTURE,HH,AIII,AII,MOISTURE,RECIRCULATION_AIR_VOLUMETRIC_FLOW,AMBIENT_TEMPERATURE,COMBUSTION_AIR_TEMPERATURE]
+    zeroTohundred_dictionary = ["Fuel Property density","Fuel property combustion water","Ambient Humidity","Combution Temperature","System Fan Heat release","Recirculation Air Volmetric Flow","Gypsum Purity","Gypsum Moisture","Hemi Hydrate","Soluble Anhydrite","Anhydrate","Stucco Moisture","Recirculation Air Volumetric flow","Ambient Temperature","Combustion Air Temperature"]
 
+    for input in range(len(zeroTohundred)):
+        if (zeroTohundred[input]<0 or zeroTohundred[input]>100):
+             system.gui.messageBox(zeroTohundred_dictionary[input] + " out of  range (0 to 100)! " )
+             exit()
+        else: 
+            pass
+    
+    ''' Vulnerability  for  negative to 100 '''
+    if (AMBIENT_TEMPERATURE < -50 or AMBIENT_TEMPERATURE>100):
+        system.gui.messageBox("Ambient temperature   out of range (- 50 to 100)")
+        exit()
 
+    if (COMBUSTION_AIR_TEMPERATURE<-10 or COMBUSTION_AIR_TEMPERATURE>100):
+        system.gui.messageBox("Combustion air temperature   out of range (- 10 to 100)")
+        exit()
 
+    ''' Vulnerability  for  negative to 100 '''
+    if (CALCINATION_TEMPERATURE<0 or CALCINATION_TEMPERATURE>300):
+        system.gui.messageBox("Calcination Temperature out of range (0 to 300)")
+        exit()
+        
+        
+        
 
 
 
