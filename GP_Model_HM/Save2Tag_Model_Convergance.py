@@ -491,6 +491,24 @@ while ((energy_Error != 0 or dry_flow_Error != 0 or water_Error != 0) ) :
 
                     system.tag.writeAsync(losses_cp_burenr_paths,losses_cp_burenr_values)
 
+                    
+                    ''' Combustion '''
+    
+                    combustion_gas_flow_NM3_H_path = "[default]Toronto/HeatMassModule/CombustionGass/combustion_gas_flow_NM3_H"
+                    combustion_temperature_path = "[default]Toronto/HeatMassModule/CombustionGass/combustion_temperature"
+                    combustion_conversion_efficiency_path = "[default]Toronto/HeatMassModule/CombustionGass/combustion_conversion_efficiency"
+                    combustion_gas_flow_kg_s_path = "[default]Toronto/HeatMassModule/CombustionGass/combustion_gas_flow_kg_s"
+                    combustion_generated_water_path = "[default]Toronto/HeatMassModule/CombustionGass/combustion_generated_water"
+                    combustion_combustion_power_path =  "[default]Toronto/HeatMassModule/CombustionGass/combustion_combustion_power"
+                    combustion_effective_power_path = "[default]Toronto/HeatMassModule/CombustionGass/combustion_effective_power"
+
+                    combustion_gas_values =[combustion_gas_flow_NM3_H,combustion_temperature,combustion_conversion_efficiency,combustion_gas_flow_kg_s,combustion_generated_water,combustion_combustion_power,combustion_effective_power]
+                    combustion_gas_paths=[combustion_gas_flow_NM3_H_path,combustion_temperature_path,combustion_conversion_efficiency_path,combustion_gas_flow_kg_s_path,combustion_generated_water_path,combustion_combustion_power_path,combustion_effective_power_path]
+
+                    system.tag.writeAsync(combustion_gas_paths,combustion_gas_values)
+
+
+
 
 
                     
