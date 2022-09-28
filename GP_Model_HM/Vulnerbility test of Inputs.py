@@ -113,6 +113,9 @@ In_leakage_in_filter_area_energy_flow =.000001  # helps to find the intial gas f
 input_material_energy_flow = .000001  # helps to find the intial gas flow
 stack_energy_flow = 0.000001  # helps to find the intial gas flow
 
+Vulnerabilty_Tag = "[default]Toronto/HeatMassModule/Vulnerability_detected" # This Tag is used if Any Input errors are detected
+system.tag.writeAsync(Vulnerabilty_Tag,False)  # Keep the vulnerabilty tag as False
+
 i = 0
 energy_Error = 1
 dry_flow_Error = 1
@@ -122,15 +125,19 @@ while ((energy_Error != 0 or dry_flow_Error != 0 or water_Error != 0) ) :
     ''' Vulnerability  for non zero Inputs'''
     if(FUEL_PROPERTIES_GAS_CALORIFIC_VALUE_HHV == 0):
         system.gui.messageBox("Gas Calorific value cannot be zero")
+        system.tag.writeAsync(Vulnerabilty_Tag,True)
         exit()
     elif(COMBUSTION_AIR_VOLUMETRIC_FLOW == 0):
         system.gui.messageBox("Combustion Air Volumetric flow cannot be Zero")
+        system.tag.writeAsync(Vulnerabilty_Tag,True)
         exit()
     elif(WALL_LOSSES_FROM_CP_OUTLET_TO_FILTER_OUTLET_TEMPERATURE == 0 or WALL_LOSSES_FROM_BURNER_TO_CP_OUTLET_TEMPERATURE == 0 ):
         system.gui.messageBox("Wall Constants cannot be zero")
+        system.tag.writeAsync(Vulnerabilty_Tag,True)
         exit()
     elif(AIII == 0 or STUCCO_FLOW == 0):
         system.gui.messageBox("AIII or STUCCO FLOW cannot be Zero")
+        system.tag.writeAsync(Vulnerabilty_Tag,True)
         exit()
 
     ''' Vulnerability  for  0 to 100 '''
@@ -140,6 +147,7 @@ while ((energy_Error != 0 or dry_flow_Error != 0 or water_Error != 0) ) :
     for input in range(len(zeroTohundred)):
         if (zeroTohundred[input]<0 or zeroTohundred[input]>100):
              system.gui.messageBox(zeroTohundred_dictionary[input] + " out of  range (0 to 100)! " )
+             system.tag.writeAsync(Vulnerabilty_Tag,True)
              exit()
         else: 
             pass
@@ -147,15 +155,18 @@ while ((energy_Error != 0 or dry_flow_Error != 0 or water_Error != 0) ) :
     ''' Vulnerability  for  negative to 100 '''
     if (AMBIENT_TEMPERATURE < -50 or AMBIENT_TEMPERATURE>100):
         system.gui.messageBox("Ambient temperature   out of range (- 50 to 100)")
+        system.tag.writeAsync(Vulnerabilty_Tag,True)
         exit()
 
     if (COMBUSTION_AIR_TEMPERATURE<-10 or COMBUSTION_AIR_TEMPERATURE>100):
         system.gui.messageBox("Combustion air temperature   out of range (- 10 to 100)")
+        system.tag.writeAsync(Vulnerabilty_Tag,True)
         exit()
 
     ''' Vulnerability  for  negative to 100 '''
     if (CALCINATION_TEMPERATURE<0 or CALCINATION_TEMPERATURE>300):
         system.gui.messageBox("Calcination Temperature out of range (0 to 300)")
+        system.tag.writeAsync(Vulnerabilty_Tag,True)
         exit()
         
         

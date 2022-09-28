@@ -4,6 +4,8 @@ MWanhydrite = lambda : 136.138
 MWimpurities = lambda : 172.171
 MWwater = lambda : 18.0153
 
+def absolute_pressure(alt):
+        return ((1 - 0.000125 * alt + 0.0000000075 * (alt** 2))) *  101325 /100
 
 def InvSHMixture(Etot, Mflow, Wh, MG, MP, MA, MI, MW):
     A = (0.0006 / 28.96 + Wh * 0.0000029 / 18.02) * Mflow + 0.076 / 2 / MWgypsum() * MG + 0.061 / 2 / MWhemihydrate() * MP + 0.033 / 2 / MWanhydrite() * MA + 0.076 / 2 / MWimpurities() * MI
@@ -41,13 +43,13 @@ SHA = lambda T:  14.01 * T + 0.033 * (T ** 2 / 2 + 273.15 * T)
 SHImpurities = lambda T : 21.84 * T + 0.076 * (T ** 2 / 2 + 273.15 * T)
 SHW = lambda T : MWwater() * T
 
+SITE_ELEVATION = 100 
 AIR_INGRESS_FILTER= 1000  # 0 - 100
 AIR_INGRESS_MILL  = 1000  # 0 - 100
 FUEL_PROPERTIES_DENSITY = 1000 #0 - 100
 FUEL_PROPERTIES_COMBUSTION_WATER = 1000 #0 - 100 # 
 FUEL_PROPERTIES_GAS_CALORIFIC_VALUE_HHV = 1000 #0 -100000
 AMBIENT_HUMIDITY = 1000 # 0 - 100
-ABSOLUTE_PRESSURE = 1000 # 
 AMBIENT_TEMPERATURE =1000 # -50 to 100
 COMBUSTION_AIR_TEMPERATURE = 1000 # -10 to 100
 COMBUSTION_AIR_VOLUMETRIC_FLOW = 1000 # 0 to 100
@@ -88,7 +90,7 @@ def INPUT_MATERIAL_liquid_water_flow(): #DEFINED COMPLEATLY - F32
     return GYPSUM_wet_gypsum_flow()*(0.01*GYPSUM_MOISTURE)*1000/3600
 
 
-
+ABSOLUTE_PRESSURE = absolute_pressure(SITE_ELEVATION)
 HUMIDITY = 0
 recirculated_air_temp = 0
 recirculation_air_density = MVOL(recirculated_air_temp,HUMIDITY,Pressure_Pa_To_mmWC(100*ABSOLUTE_PRESSURE-101325))
