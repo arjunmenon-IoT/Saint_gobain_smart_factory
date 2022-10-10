@@ -27,7 +27,7 @@ Absolute_Humidity_g_kg = lambda temperature,relative_humidity  : round ((( 6.112
 
 print(Site_elevation)   #returns the site elevation of toronto
 print(Temperature)      # returns the teperature of toronto
-print(Absolute_Humidity_g_kg(Temperature,relative_humdity)) # returns the Absolte humidty from relative humidity get from Api
+print(round(Absolute_Humidity_g_kg(Temperature,relative_humdity),1)) # returns the Absolte humidty from relative humidity get from Api
 print(Absolute_pressure(Site_elevation)) # return sthe absloute pressure fo the site 
 print(weatherdata[0]["Weather_Date_Local"]) # returns the Local Time that read the value
 #print (system.date.parse(weatherdata[0]["Weather_Date_Local"], "yyyy-MM-dd'T'HH:mm:ss"))
