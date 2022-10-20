@@ -5,4 +5,3 @@ def MVOL(Temperature,Humidity,Static_Pressure):
 def exces_air_percentatge(Combustion_air_dryflow,gas_flow_normalised,stochiometric_air_factor):
     return 100*(Combustion_air_dryflow/MVOL(0, 0, 0)*3600/(gas_flow_normalised*stochiometric_air_factor) - 1)
 
-
