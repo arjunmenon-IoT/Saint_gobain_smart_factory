@@ -3,7 +3,7 @@ from  __future__ import division
 #endtime = system.date.now()
 #starttime = system.date.addMinutes(endtime, -2000)
 #-------------------------------------------------------------------------------------------------------------------------------------------------------------
-Code_completion_tag = '[default]Toronto/HeatMassModule/loading' #Save the percentage of code execution into a tag
+
 #universal declaration of tag path
 Airflowtagpath = '[MQTT Engine]Edge Nodes/Toronto/SPA/Calcination/Pfeiffer Mill/Mill/System Fan/Air_Flow_PV'
 Re_circulation_percentage_tagpath = '[MQTT Engine]Edge Nodes/Toronto/SPA/Calcination/Pfeiffer Mill/Mill/System Fan/Exhaust Damper_Position_PV'
@@ -46,17 +46,17 @@ COMBUSTION_TEMPERATURE = 24
 #Re_circulation_percentage_tagpath = string , Re circulation Percenatage Tag path
 
 
-def wrap_all_to_dataset(StartTime,EndTime):
+def wrap_all_to_dataset( StartTime,EndTime):
     
     global starttime 
     starttime  = StartTime
     global endtime  
     endtime= EndTime
-    system.tag.writeAsync(Code_completion_tag, 10)	
-
+    
+    
 
     def tag_query_history(tagpath):	
-        dataset = system.tag.queryTagHistory(paths=[tagpath], startDate=starttime,endDate=endtime,returnSize=1,aggregationMode="Average")
+        dataset = system.tag.queryTagHistory(paths=[tagpath], startDate=starttime, endDate=endtime,returnSize=-1,aggregationMode="Average")
         datasetlist = dataset.getColumnAsList(1)
         return sum(datasetlist)/len(datasetlist)
 
@@ -201,10 +201,9 @@ def wrap_all_to_dataset(StartTime,EndTime):
     #IN4.0RM
     GYPSUM_PURITY= 85.0
     GYPSUM_MOISTURE= 0.53 #3
-    HH= (tag_query_history(hh_tag_path)/6.2)*100
+    HH= tag_query_history(hh_tag_path)
     AIII = 7.8
-    #---------------------------------------------------------------------------------------------------------------------
-    system.tag.writeAsync(Code_completion_tag, 30)   # Assumes th ecode as completed 10 % of the execution
+
     #--------------------------------------------------------------------------------------------------------------------------
 
 
@@ -266,10 +265,10 @@ def wrap_all_to_dataset(StartTime,EndTime):
 
 
 
+    #GAS_FLOW = 0
     
     def Model_convergence():
 
-        Steps_model_convergence_running = 0 #Calculate the numebr of times Funtion runns
 
         ABSOLUTE_PRESSURE = absolute_pressure(SITE_ELEVATION) #Absolut epressure comes from Site Elevation
 
@@ -453,15 +452,6 @@ def wrap_all_to_dataset(StartTime,EndTime):
             water_Errors = round(100*(water_iputs-water_outputs)/water_iputs)
             optimised = False # Link to next Stage of caculation
 
-            Steps_model_convergence_running = Steps_model_convergence_running +1 #find number of time code running
-            if (Steps_model_convergence_running <5):
-                system.tag.writeAsync(Code_completion_tag, 40)   # Assumes th ecode as completed 10 % of the execution
-            elif (Steps_model_convergence_running >5 and Steps_model_convergence_running <10):
-                system.tag.writeAsync(Code_completion_tag, 60)   # Assumes th ecode as completed 10 % of the execution
-
-
-
-
             
             if(energy_Error == 0 and dry_flow_Error==0 and water_Errors==0):
                 result_list =[]
@@ -469,7 +459,6 @@ def wrap_all_to_dataset(StartTime,EndTime):
                 result_list.append(combustion_air_dry_flow)
                 result_list.append(GAS_FLOW)
                 result_list.append(combustion_combustion_power)
-                system.tag.writeAsync(Code_completion_tag, 80)   # Assumes th ecode as completed 10 % of the execution
                 return (result_list)
                 break
     
@@ -485,7 +474,7 @@ def wrap_all_to_dataset(StartTime,EndTime):
     recirculation_humidity_avg =tag_query_history(recirculation_Humidity_tag_path)
     dataset.append(['recirculation_humidity_avg',recirculation_humidity_avg])
 
-    hh_avg = (tag_query_history(hh_tag_path)/6.2)*100
+    hh_avg = tag_query_history(hh_tag_path)
     dataset.append(['hh_avg',hh_avg])
 
     stucco_temperature_avg = tag_query_history(stucco_temperatue_tag_path)
@@ -502,8 +491,6 @@ def wrap_all_to_dataset(StartTime,EndTime):
 
     recirculation_volumetric_flow_avg = Re_circulation_volumeric_flow ()
     dataset.append(['recirculation_volumetric_flow_avg',recirculation_volumetric_flow_avg])
-
-    system.tag.writeAsync(Code_completion_tag, 90)   # Assumes th ecode as completed 10 % of the execution
 
     excess_air_percentage_avg = exces_air_percentatge()
     dataset.append(['excess_air_percentage_avg',excess_air_percentage_avg])
@@ -526,12 +513,9 @@ def wrap_all_to_dataset(StartTime,EndTime):
     combustion_kwh_t_avg = tag_query_history(combustion_kwh_t_tag_path)
     dataset.append(['combustion_kwh_t_avg',combustion_kwh_t_avg])
 
-
     electrical_comspution_kwh_t_avg = tag_query_history(electrical_comspution_tag_path)
     dataset.append(['electrical_comspution_kwh_t_avg',electrical_comspution_kwh_t_avg])
-    dataset.append(['data_updated',1])
-    Data_2_UI = system.dataset.toDataSet(header, dataset)
 
-    system.tag.writeAsync(Code_completion_tag, 100)
+    Data_2_UI = system.dataset.toDataSet(header, dataset)
 
     return Data_2_UI
