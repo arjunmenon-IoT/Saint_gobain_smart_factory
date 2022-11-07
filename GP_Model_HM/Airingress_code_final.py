@@ -1,7 +1,7 @@
 from  __future__ import division
 
-#endtime = system.date.now()
-#starttime = system.date.addMinutes(endtime, -2000)
+endtime = system.date.now()
+starttime = system.date.addMinutes(endtime, -2000)
 #-------------------------------------------------------------------------------------------------------------------------------------------------------------
 Code_completion_tag = '[default]Toronto/HeatMassModule/loading' #Save the percentage of code execution into a tag
 #universal declaration of tag path
@@ -23,9 +23,7 @@ electrical_comspution_tag_path ='[MQTT Engine]Edge Nodes/Toronto/Energy/Electric
 flow_after_filter_temp = '[MQTT Engine]Edge Nodes/Toronto/SPA/Calcination/Dust Collection/Dust Collection/Dust Collector/Outlet_Temperature_PV' # Flow after filter temperature
 
 #-----------------------------------------------------------------------------------------------------------------------------------------------------------------
-#yet to find
-AIR_INGRESS_FILTER= 0
-AIR_INGRESS_MILL  = 0
+
 # Constants  
 COMBUSTION_AIR_FAN_HEAT_RELEASE = 0 # Constant for tornto plant
 FUEL_PROPERTIES_GAS_CALORIFIC_VALUE_HHV = 9542
@@ -42,18 +40,28 @@ WALL_LOSSES_FROM_BURNER_TO_CP_OUTLET_WALL_SURFACE =50
 AIII_BACK_CONVERSTION_CONVERSION_RATIO = 80
 COMBUSTION_TEMPERATURE = 24
 
+
 #---------------------------------------------------------------------------------------------------------------------
 #Airflowtagpath =string, Air flow String tag path
 #Re_circulation_percentage_tagpath = string , Re circulation Percenatage Tag path
 
 
-def wrap_all_to_dataset(StartTime,EndTime):
+def wrap_all_to_dataset(StartTime,EndTime):        
     
+    global AIR_INGRESS_MILL
+    global AIR_INGRESS_FILTER
+    global HUMIDITY
+    global flow_after_filter_temperature
+
+    AIR_INGRESS_MILL = 0
+    AIR_INGRESS_FILTER =0
+  
     global starttime 
     starttime  = StartTime
     global endtime  
     endtime= EndTime
     system.tag.writeAsync(Code_completion_tag, 10)	
+    
 
 
     def tag_query_history(tagpath):	
@@ -270,10 +278,14 @@ def wrap_all_to_dataset(StartTime,EndTime):
 
 
 
-
+    model_convergence_initialised = False
     
     def Model_convergence():
+        
 
+        
+
+            
         Steps_model_convergence_running = 0 #Calculate the numebr of times Funtion runns
 
         ABSOLUTE_PRESSURE = absolute_pressure(SITE_ELEVATION) #Absolut epressure comes from Site Elevation
@@ -424,7 +436,7 @@ def wrap_all_to_dataset(StartTime,EndTime):
             stack_volM_flow = stack_dry_flow*(1+stack_humidity/1000)/stack_density
             stack_energy_flow = flow_after_filter_energy + SYSTEM_FAN_HEAT_RELEASE - recirculated_air_energy_flow
 
-        #Recirculation Humidity """
+            #Recirculation Humidity """
             recirculation_percentage  =  100* recirculation_air_dry_flow /flow_after_filter_dry_flow
 
             # Recirculation Air""" 
@@ -437,7 +449,7 @@ def wrap_all_to_dataset(StartTime,EndTime):
                 #Gass Flow"""
             GAS_FLOW = (((dissociation_dehydration+dissociation_evaporation+drying_evaporation-Aiii_back_conversion_heat_release)+(output_material_energy_flow)+(wall_losses_from_burner_to_CP_outlet_losses+wall_losses_from_cp_outlet_to_filter_outlet_losses)+(stack_energy_flow))-(input_material_energy_flow+(air_entrainment_energy_flow+In_leakage_in_filter_area_energy_flow)+(combustion_air_energy_flow)+(SYSTEM_FAN_HEAT_RELEASE)))*3600/((FUEL_PROPERTIES_GAS_CALORIFIC_VALUE_HHV*0.901)/860)/860
             
-        #Model Convergence """
+            #Model Convergence """
             #Energy Inputs
             energy_inputs = input_material_energy_flow+(air_entrainment_energy_flow+In_leakage_in_filter_area_energy_flow)+(combustion_combustion_power+combustion_air_energy_flow) + (SYSTEM_FAN_HEAT_RELEASE)
             #Energy Outputs
@@ -458,17 +470,9 @@ def wrap_all_to_dataset(StartTime,EndTime):
             water_Errors = round(100*(water_iputs-water_outputs)/water_iputs)
             optimised = False # Link to next Stage of caculation
 
-            Steps_model_convergence_running = Steps_model_convergence_running +1 #find number of time code running
-            if (Steps_model_convergence_running <5):
-                system.tag.writeAsync(Code_completion_tag, 40)   # Assumes th ecode as completed 10 % of the execution
-            elif (Steps_model_convergence_running >5 and Steps_model_convergence_running <10):
-                system.tag.writeAsync(Code_completion_tag, 60)   # Assumes th ecode as completed 10 % of the execution
-
-
-
-
-            
             if(energy_Error == 0 and dry_flow_Error==0 and water_Errors==0):
+                
+                
                 result_list =[]
                 #result_list = ['combustion_air_dry_flow','GAS_FLOW','combustion_combustion_power']
                 result_list.append(combustion_air_dry_flow)
@@ -476,11 +480,80 @@ def wrap_all_to_dataset(StartTime,EndTime):
                 result_list.append(combustion_combustion_power)
                 result_list.append(HUMIDITY)
                 result_list.append(flow_after_filter_temperature)
-
                 
-                system.tag.writeAsync(Code_completion_tag, 80)   # Assumes th ecode as completed 10 % of the execution
+                
                 return (result_list)
+                model_convergence_initialised = True
+                statestate = 1
                 break
+
+
+    #RE_CIRCULATION_HUMIDITY_PLC = tag_query_history(flow_after_filter_temp)
+    RE_CIRCULATION_HUMIDITY_PLC = 300.00
+    FLOW_AFTER_FILTER_TEMPERATURE_PLC = 149.589
+    
+    #------------------------------------------------------------------------------
+    system.tag.writeAsync(Code_completion_tag, 40)   # Assumes th ecode as completed 10 % of the execution
+    #------------------------------------------------------------------------------
+
+ 
+    Model_convergence()
+    #---------------------------------------------------------------------------
+    system.tag.writeAsync(Code_completion_tag, 50)   # Assumes th ecode as completed 10 % of the execution
+    #---------------------------------------------------------------------------
+
+        
+
+
+    while(round (HUMIDITY)!=round (RE_CIRCULATION_HUMIDITY_PLC)): # Total air ingress to the system is calculated
+        AIR_INGRESS_MILL = AIR_INGRESS_MILL + 0.01
+        Model_convergence()
+        #----------------------------------------------------------------------
+        system.tag.writeAsync(Code_completion_tag, 60)   # Assumes th ecode as completed 10 % of the execution
+        #----------------------------------------------------------------------
+        if (round (HUMIDITY) == round (RE_CIRCULATION_HUMIDITY_PLC)):
+            AIR_INGRESS_MILL = round(AIR_INGRESS_MILL,2)
+            print (AIR_INGRESS_MILL)
+        break
+    
+    flow_after_filter_temperature =  round(flow_after_filter_temperature,2)
+    max_flow_after_filter_temperature = round(flow_after_filter_temperature,2)
+    FLOW_AFTER_FILTER_TEMPERATURE_PLC =  round(FLOW_AFTER_FILTER_TEMPERATURE_PLC,2)
+    AIR_INGRESS_FILTER = AIR_INGRESS_MILL
+    AIR_INGRESS_MILL = 0.00
+    Model_convergence()
+    #----------------------------------------------------------------------------
+    system.tag.writeAsync(Code_completion_tag, 70)   # Assumes th ecode as completed 10 % of the execution
+    #----------------------------------------------------------------------------
+    min_flow_after_filter_temperature =  round(flow_after_filter_temperature,2)
+    print"here"
+    if (max_flow_after_filter_temperature>=FLOW_AFTER_FILTER_TEMPERATURE_PLC and min_flow_after_filter_temperature <= FLOW_AFTER_FILTER_TEMPERATURE_PLC  ): # Condition for filter ingress detected
+        AIR_INGRESS_MILL = AIR_INGRESS_FILTER
+        AIR_INGRESS_FILTER = 0.0
+        print "hereeeeee"
+        Model_convergence()
+        #-------------------------------------------------------------------------
+        system.tag.writeAsync(Code_completion_tag, 80)   # Assumes th ecode as completed 10 % of the execution
+        #--------------------------------------------------------------------------
+        while (round(FLOW_AFTER_FILTER_TEMPERATURE_PLC) != round(flow_after_filter_temperature)):
+            AIR_INGRESS_FILTER = round(AIR_INGRESS_FILTER,2) 
+            AIR_INGRESS_MILL = round(AIR_INGRESS_MILL,2) 
+            AIR_INGRESS_MILL= AIR_INGRESS_MILL - 0.01
+            AIR_INGRESS_FILTER = AIR_INGRESS_FILTER + 0.01
+            Model_convergence()
+            #----------------------------------------------------------------------
+            system.tag.writeAsync(Code_completion_tag, 90)   # Assumes th ecode as completed 10 % of the execution
+            #---------------------------------------------------------------------
+            if(AIR_INGRESS_FILTER >=0 and AIR_INGRESS_MILL>=0  and round(FLOW_AFTER_FILTER_TEMPERATURE_PLC) == round(flow_after_filter_temperature)):
+                print (AIR_INGRESS_FILTER,AIR_INGRESS_MILL)
+                break
+
+        
+    
+    
+
+
+
     
     header = ['Parameter','Avg_value']
     dataset = []
@@ -512,7 +585,7 @@ def wrap_all_to_dataset(StartTime,EndTime):
     recirculation_volumetric_flow_avg = Re_circulation_volumeric_flow ()
     dataset.append(['recirculation_volumetric_flow_avg',recirculation_volumetric_flow_avg])
 
-    system.tag.writeAsync(Code_completion_tag, 90)   # Assumes th ecode as completed 10 % of the execution
+    
 
     excess_air_percentage_avg = exces_air_percentatge()
     dataset.append(['excess_air_percentage_avg',excess_air_percentage_avg])
@@ -542,16 +615,23 @@ def wrap_all_to_dataset(StartTime,EndTime):
     dataset.append(['Calculated_gas_flow',Calculated_gas_flow])
 
     Calculated_re_humidity = get_re_humidity()
-    dataset.append(['Calculated_re_humidity',Calculated_re_humidity])
+    dataset.append(['Calculated_re_humidity',Calculated_re_humidity]) #calculated Re ciculation humidity to dataset
+
+    dataset.append(['Air_ingress_filter',AIR_INGRESS_FILTER]) #Final Air ingress filter 
+
+    dataset.append(['Air_ingress_mill',AIR_INGRESS_MILL]) #Final Air ingress mill
+
     
-    calculated_flowafterfilter_temp = get_flow_after_filter_temp()
-    dataset.append(['calculated_flowafterfilter_temp',calculated_flowafterfilter_temp])
     
-    flow_after_filter_temp_plc = tag_query_history(flow_after_filter_temp)
-    dataset.append(['flow_after_filter_temp_plc',flow_after_filter_temp_plc])
-    	
+
+        
     Data_2_UI = system.dataset.toDataSet(header, dataset)
+    #---------------------------------------------------------
+    system.tag.writeAsync(Code_completion_tag, 95)
+    #---------------------------------------------------------
 
-    system.tag.writeAsync(Code_completion_tag, 100)
+    print Data_2_UI.getColumnAsList(1)
+    
+	    
 
-    return Data_2_UI
+wrap_all_to_dataset(starttime,endtime)

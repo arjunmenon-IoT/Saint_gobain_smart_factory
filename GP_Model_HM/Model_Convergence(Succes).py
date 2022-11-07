@@ -277,6 +277,6 @@ while ((energy_Error != 0 or dry_flow_Error != 0 or water_Error != 0) ) :
 
     
     if(energy_Error == 0 and dry_flow_Error==0 and water_Errors==0):
-         print(GAS_FLOW,HUMIDITY)
+         print(flow_after_filter_temperature,HUMIDITY)
          break
 
