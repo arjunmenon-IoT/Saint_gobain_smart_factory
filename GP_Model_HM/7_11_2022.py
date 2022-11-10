@@ -42,6 +42,9 @@ WALL_LOSSES_FROM_BURNER_TO_CP_OUTLET_WALL_SURFACE =50
 AIII_BACK_CONVERSTION_CONVERSION_RATIO = 80
 COMBUSTION_TEMPERATURE = 24
 
+flow_after_filter_temperature = 0
+
+
 #---------------------------------------------------------------------------------------------------------------------
 #Airflowtagpath =string, Air flow String tag path
 #Re_circulation_percentage_tagpath = string , Re circulation Percenatage Tag path
@@ -53,7 +56,12 @@ def wrap_all_to_dataset(StartTime,EndTime):
     starttime  = StartTime
     global endtime  
     endtime= EndTime
-    system.tag.writeAsync(Code_completion_tag, 10)	
+    system.tag.writeAsync(Code_completion_tag, 10)
+    global flow_after_filter_temperature
+    global AIR_INGRESS_FILTER
+    global AIR_INGRESS_MILL
+    
+
 
 
     def tag_query_history(tagpath):	
@@ -269,11 +277,14 @@ def wrap_all_to_dataset(StartTime,EndTime):
 
 
 
-
-
+    #------------------------------------------------
+    FLOW_AFTER_FILTER_TEMPERATURE_PLC = tag_query_history(flow_after_filter_temp)
+    #------------------------------------------------
+	
     
     def Model_convergence():
 
+        global flow_after_filter_temperature
         Steps_model_convergence_running = 0 #Calculate the numebr of times Funtion runns
 
         ABSOLUTE_PRESSURE = absolute_pressure(SITE_ELEVATION) #Absolut epressure comes from Site Elevation
@@ -478,6 +489,23 @@ def wrap_all_to_dataset(StartTime,EndTime):
                 return (result_list)
                 break
     
+    flow_after_filter_temperature =  round(flow_after_filter_temperature,2)
+    FLOW_AFTER_FILTER_TEMPERATURE_PLC =  round(FLOW_AFTER_FILTER_TEMPERATURE_PLC,2)
+    if (flow_after_filter_temperature < FLOW_AFTER_FILTER_TEMPERATURE_PLC):
+        #system.gui.messageBox("Potential Air Ingress at filter Detected")
+        while (round(FLOW_AFTER_FILTER_TEMPERATURE_PLC) != round(flow_after_filter_temperature)):
+            AIR_INGRESS_FILTER = round(AIR_INGRESS_FILTER,3) 
+            AIR_INGRESS_FILTER = AIR_INGRESS_FILTER + 0.001
+            Model_convergence()
+            if(round(FLOW_AFTER_FILTER_TEMPERATURE_PLC) == round(flow_after_filter_temperature)):
+                #print ('AIR_INGRESS_MILL',AIR_INGRESS_MILL)
+                #print ('AIR_INGRESS_FILTER',AIR_INGRESS_FILTER)
+                #print (round(FLOW_AFTER_FILTER_TEMPERATURE_PLC))
+                #print (round(flow_after_filter_temperature))
+                break
+	else:
+		pass
+
     header = ['Parameter','Avg_value']
     dataset = []
 
@@ -547,6 +575,10 @@ def wrap_all_to_dataset(StartTime,EndTime):
     
     flow_after_filter_temp_plc = tag_query_history(flow_after_filter_temp)
     dataset.append(['flow_after_filter_temp_plc',flow_after_filter_temp_plc])
+    
+    Airingress_filter = AIR_INGRESS_FILTER
+    dataset.append(['Airingress_filter',Airingress_filter])
+    
     	
     Data_2_UI = system.dataset.toDataSet(header, dataset)
 

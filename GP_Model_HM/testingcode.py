@@ -1,6 +1,6 @@
 from  __future__ import division
-endtime = system.date.now()
-starttime = system.date.addMinutes(endtime, -2000)
+#endtime = system.date.now()
+#starttime = system.date.addMinutes(endtime, -2000)
 
 MWgypsum = lambda : 172.171
 MWhemihydrate = lambda : 145.148
@@ -10,6 +10,7 @@ MWwater = lambda : 18.0153
 
 #----------------------------------------------------------------------------------------------------------------------
 #universal declaration of tag path
+humidity_calculation_percentage = '[default]Toronto/HeatMassModule/humidity_calculation'
 Airflowtagpath = '[MQTT Engine]Edge Nodes/Toronto/SPA/Calcination/Pfeiffer Mill/Mill/System Fan/Air_Flow_PV'
 Re_circulation_percentage_tagpath = '[MQTT Engine]Edge Nodes/Toronto/SPA/Calcination/Pfeiffer Mill/Mill/System Fan/Exhaust Damper_Position_PV'
 combustion_air_temperature_path='[MQTT Engine]Edge Nodes/Toronto/SPA/Calcination/Pfeiffer Mill/Mill/Combustion Fan/Inlet_Temperature_PV'
@@ -31,79 +32,8 @@ flow_after_filter_temp = '[MQTT Engine]Edge Nodes/Toronto/SPA/Calcination/Dust C
 
 
 
-def DISSOCIATION_water(): #DEFINED COMPLEATLY #I34
-    return OUTPUT_MATERIAL_dry_flow()*(0.01*HH/MWhemihydrate()*1.5 + 0.01*(AIII+AII)/MWanhydrite()*2 + AIII_BACK_CONVERSTION_CONVERSION_RATIO/(1-AIII_BACK_CONVERSTION_CONVERSION_RATIO)*0.01*AIII/MWanhydrite()*0.5)*MWwater()
-
-def OUTPUT_MATERIAL_dry_flow(): #DEFINED COMPLEATLY - 012
-        return (1-0.01*MOISTURE)*STUCCO_FLOW*1000/3600
-
-def DRYING_water():  # I39
-        return  INPUT_MATERIAL_liquid_water_flow() - OUTPUT_MATERIAL_liquid_water_flow()
-
-def OUTPUT_MATERIAL_liquid_water_flow(): #DEFINED COMPLEATLY - 013
-        return 0.01*MOISTURE*STUCCO_FLOW*1000/3600
-
-def GYPSUM_wet_gypsum_flow(): #DEFINED COMPLEATLY - gypsum_wet_gypsum_flow
-        return StuccoToGypsum(0.01*HH,0.01*AIII,0.01*AII)*(1-0.01*MOISTURE)*STUCCO_FLOW/(1-0.01*GYPSUM_MOISTURE)
-
-def INPUT_MATERIAL_liquid_water_flow(): #DEFINED COMPLEATLY - F32
-    return GYPSUM_wet_gypsum_flow()*(0.01*GYPSUM_MOISTURE)*1000/3600
-def InvSHMixture(Etot, Mflow, Wh, MG, MP, MA, MI, MW):
-    A = (0.0006 / 28.96 + Wh * 0.0000029 / 18.02) * Mflow + 0.076 / 2 / MWgypsum() * MG + 0.061 / 2 / MWhemihydrate() * MP + 0.033 / 2 / MWanhydrite() * MA + 0.076 / 2 / MWimpurities() * MI
-    B = (6.8 / 28.96 + Wh * 0.0081 / 18.02) * Mflow + (21.84 + 0.076 * 273.15) / MWgypsum() * MG + (11.48 + 0.061 * 273.15) / MWhemihydrate() * MP + (14.01 + 0.033 * 273.15) / MWanhydrite() * MA + (21.84 + 0.076 * 273.15) / MWimpurities() * MI + MWwater() / MWwater() * MW
-    C = -Etot
-    Delta = B ** 2 - 4 * A * C
-
-    InvSHMixture = (-B + Delta **  0.5) / 2 / A
-    return InvSHMixture
-
-def MVOL(Temperature,Humidity,Static_Pressure):
-        MVOL = ((1 + Humidity / 1000) * (273.15 / (273.15 + Temperature)) * (10329 + Static_Pressure) / 10329) / (0.7735 + Humidity / 1000 * 1.2436)
-        return MVOL  # Round the value to 2 decimal points
-
-def TEM(Dh, Wh):   # R5
-    A = 0.0000006 / 28.96 + (Wh / 1000) * 0.0000029 / 18.02
-    B = 0.0068 / 28.96 + (Wh / 1000) * 0.0081 / 18.02
-    C = -Dh / 1000
-    Delta = B ** 2 - 4 * A * C
-    TEM = (-B + Delta ** 0.5) / 2 / A
-    return TEM
-
-def absolute_pressure(alt):
-        return ((1 - 0.000125 * alt + 0.0000000075 * (alt** 2))) *  101325 /100
-
-def tag_query_history(tagpath):	
-    dataset = system.tag.queryTagHistory(paths=[tagpath], startDate=starttime,endDate=endtime,returnSize=1,aggregationMode="Average")
-    datasetlist = dataset.getColumnAsList(1)
-    return sum(datasetlist)/len(datasetlist)
-def Re_circulation_volumeric_flow ():
-    Airflowdataset = system.tag.queryTagHistory(paths=[Airflowtagpath], startDate=starttime, endDate=endtime,aggregationMode="Average",intervalHours = 2)
-    circulation_percentage_dataset = system.tag.queryTagHistory(paths=[Re_circulation_percentage_tagpath], startDate=starttime, endDate=endtime,aggregationMode="Average",intervalHours=2)
-    
-
-    AirFlow = []
-    circulation_percentage = []
-    for i in  range(circulation_percentage_dataset.getRowCount()):
-            AirFlow.append(Airflowdataset.getValueAt(i,1) * .0003)
-            circulation_percentage.append(circulation_percentage_dataset.getValueAt(i,1) /100)
-
-    RECIRCULATION_AIR_VOLMETRIC_FLOW_list = [AirFlow[i] * circulation_percentage[i] for i in range(len(AirFlow))]
-    Average= sum(RECIRCULATION_AIR_VOLMETRIC_FLOW_list)/len(RECIRCULATION_AIR_VOLMETRIC_FLOW_list)
-    return  Average # Returns the Average value in  m3/sec
-
-def Absolute_Humidity_g_kg():
-    Absolute_Humidity_g_kg = lambda temperature,relative_humidity  : round ((( 6.112 * pow(2.71828,(17.67 * temperature)/(temperature+243.5)) * relative_humidity  * 2.1674 ) / (273.15+temperature)) * 0.83056478 , 2) # returns the value in (g/m3)
-
-    
-    relative_humidity_average_dataset = system.tag.queryTagHistory(paths=[relative_humidity_path], startDate=starttime, endDate=endtime, aggregationMode="Maximum",intervalHours=2)
-    relative_humidity_list = [] 
-    for i in  range(relative_humidity_average_dataset.getRowCount()):
-        relative_humidity_list.append(relative_humidity_average_dataset.getValueAt(i,1))
-    relative_humidity_Avg = sum(relative_humidity_list)/len(relative_humidity_list)
-    return  Absolute_Humidity_g_kg(AMBIENT_TEMPERATURE,relative_humidity_Avg)
-
-
-
+        
+        
 Pressure_Pa_To_mmWC = lambda pressure : pressure / 9.80638278
 StuccoToGypsum =  lambda Hemihydrate, AIII, AII :1 + Hemihydrate * 1.5 * 18.0153 / 145.148 + (AIII + AII) * 2 * 18.0153 / 136.138
 CS = lambda Ts,Wh : 1000 * (((0.0068 * Ts + 0.0000006 * (Ts ** 2)) / 28.96) + (Wh / 1000) * ((0.0081 * Ts + 0.0000029 * (Ts**2)) / 18.02)) 
@@ -120,47 +50,134 @@ SHA = lambda T:  14.01 * T + 0.033 * (T ** 2 / 2 + 273.15 * T)
 SHImpurities = lambda T : 21.84 * T + 0.076 * (T ** 2 / 2 + 273.15 * T)
 SHW = lambda T : MWwater() * T
 
+def air_ingress(humidity,StartTime,EndTime):
+    system.tag.writeAsync(humidity_calculation_percentage, 10)
+    global flow_after_filter_temperature
+    global AIR_INGRESS_FILTER
+    global AIR_INGRESS_MILL
+    global starttime 
+    starttime  = StartTime
+    global endtime  
+    endtime= EndTime
 
 
-#----------------------------------------------------
+
+    AIR_INGRESS_FILTER= 0
+    AIR_INGRESS_MILL  = 0
+    # Constants  
+    COMBUSTION_AIR_FAN_HEAT_RELEASE = 0 # Constant for tornto plant
+    FUEL_PROPERTIES_GAS_CALORIFIC_VALUE_HHV = 9542
+    FUEL_PROPERTIES_DENSITY = 0.78
+    FUEL_PROPERTIES_COMBUSTION_WATER = 1.61          
+    SITE_ELEVATION = 100
+    MOISTURE= 0
+    AII = 0.0
+    SYSTEM_FAN_HEAT_RELEASE = 10
+    WALL_LOSSES_FROM_CP_OUTLET_TO_FILTER_OUTLET_TEMPERATURE = 50
+    WALL_LOSSES_FROM_CP_OUTLET_TO_FILTER_OUTLET_WALL_SURFACE =100
+    WALL_LOSSES_FROM_BURNER_TO_CP_OUTLET_TEMPERATURE = 80
+    WALL_LOSSES_FROM_BURNER_TO_CP_OUTLET_WALL_SURFACE =50
+    AIII_BACK_CONVERSTION_CONVERSION_RATIO = 80
+    COMBUSTION_TEMPERATURE = 24
+
+	
+    def DISSOCIATION_water(): #DEFINED COMPLEATLY #I34
+            return OUTPUT_MATERIAL_dry_flow()*(0.01*HH/MWhemihydrate()*1.5 + 0.01*(AIII+AII)/MWanhydrite()*2 + AIII_BACK_CONVERSTION_CONVERSION_RATIO/(1-AIII_BACK_CONVERSTION_CONVERSION_RATIO)*0.01*AIII/MWanhydrite()*0.5)*MWwater()
+        
+    def OUTPUT_MATERIAL_dry_flow(): #DEFINED COMPLEATLY - 012
+            return (1-0.01*MOISTURE)*STUCCO_FLOW*1000/3600
+    
+    def DRYING_water():  # I39
+            return  INPUT_MATERIAL_liquid_water_flow() - OUTPUT_MATERIAL_liquid_water_flow()
+    
+    def OUTPUT_MATERIAL_liquid_water_flow(): #DEFINED COMPLEATLY - 013
+            return 0.01*MOISTURE*STUCCO_FLOW*1000/3600
+    
+    def GYPSUM_wet_gypsum_flow(): #DEFINED COMPLEATLY - gypsum_wet_gypsum_flow
+            return StuccoToGypsum(0.01*HH,0.01*AIII,0.01*AII)*(1-0.01*MOISTURE)*STUCCO_FLOW/(1-0.01*GYPSUM_MOISTURE)
+    
+    def INPUT_MATERIAL_liquid_water_flow(): #DEFINED COMPLEATLY - F32
+        return GYPSUM_wet_gypsum_flow()*(0.01*GYPSUM_MOISTURE)*1000/3600
+    def InvSHMixture(Etot, Mflow, Wh, MG, MP, MA, MI, MW):
+        A = (0.0006 / 28.96 + Wh * 0.0000029 / 18.02) * Mflow + 0.076 / 2 / MWgypsum() * MG + 0.061 / 2 / MWhemihydrate() * MP + 0.033 / 2 / MWanhydrite() * MA + 0.076 / 2 / MWimpurities() * MI
+        B = (6.8 / 28.96 + Wh * 0.0081 / 18.02) * Mflow + (21.84 + 0.076 * 273.15) / MWgypsum() * MG + (11.48 + 0.061 * 273.15) / MWhemihydrate() * MP + (14.01 + 0.033 * 273.15) / MWanhydrite() * MA + (21.84 + 0.076 * 273.15) / MWimpurities() * MI + MWwater() / MWwater() * MW
+        C = -Etot
+        Delta = B ** 2 - 4 * A * C
+    
+        InvSHMixture = (-B + Delta **  0.5) / 2 / A
+        return InvSHMixture
+    
+    def MVOL(Temperature,Humidity,Static_Pressure):
+            MVOL = ((1 + Humidity / 1000) * (273.15 / (273.15 + Temperature)) * (10329 + Static_Pressure) / 10329) / (0.7735 + Humidity / 1000 * 1.2436)
+            return MVOL  # Round the value to 2 decimal points
+    
+    def TEM(Dh, Wh):   # R5
+        A = 0.0000006 / 28.96 + (Wh / 1000) * 0.0000029 / 18.02
+        B = 0.0068 / 28.96 + (Wh / 1000) * 0.0081 / 18.02
+        C = -Dh / 1000
+        Delta = B ** 2 - 4 * A * C
+        TEM = (-B + Delta ** 0.5) / 2 / A
+        return TEM
+    
+    def absolute_pressure(alt):
+            return ((1 - 0.000125 * alt + 0.0000000075 * (alt** 2))) *  101325 /100
+
+	     
+    def tag_query_history(tagpath):	
+        dataset = system.tag.queryTagHistory(paths=[tagpath], startDate=starttime,endDate=endtime,returnSize=1,aggregationMode="Average")
+        datasetlist = dataset.getColumnAsList(1)
+        return sum(datasetlist)/len(datasetlist)
+    def Re_circulation_volumeric_flow ():
+        Airflowdataset = system.tag.queryTagHistory(paths=[Airflowtagpath], startDate=starttime, endDate=endtime,aggregationMode="Average",intervalHours = 2)
+        circulation_percentage_dataset = system.tag.queryTagHistory(paths=[Re_circulation_percentage_tagpath], startDate=starttime, endDate=endtime,aggregationMode="Average",intervalHours=2)
+        
+
+        AirFlow = []
+        circulation_percentage = []
+        for i in  range(circulation_percentage_dataset.getRowCount()):
+                AirFlow.append(Airflowdataset.getValueAt(i,1) * .0003)
+                circulation_percentage.append(circulation_percentage_dataset.getValueAt(i,1) /100)
+
+        RECIRCULATION_AIR_VOLMETRIC_FLOW_list = [AirFlow[i] * circulation_percentage[i] for i in range(len(AirFlow))]
+        Average= sum(RECIRCULATION_AIR_VOLMETRIC_FLOW_list)/len(RECIRCULATION_AIR_VOLMETRIC_FLOW_list)
+        return  Average # Returns the Average value in  m3/sec
+
+    def Absolute_Humidity_g_kg():
+        Absolute_Humidity_g_kg = lambda temperature,relative_humidity  : round ((( 6.112 * pow(2.71828,(17.67 * temperature)/(temperature+243.5)) * relative_humidity  * 2.1674 ) / (273.15+temperature)) * 0.83056478 , 2) # returns the value in (g/m3)
+
+        
+        relative_humidity_average_dataset = system.tag.queryTagHistory(paths=[relative_humidity_path], startDate=starttime, endDate=endtime, aggregationMode="Maximum",intervalHours=2)
+        relative_humidity_list = [] 
+        for i in  range(relative_humidity_average_dataset.getRowCount()):
+            relative_humidity_list.append(relative_humidity_average_dataset.getValueAt(i,1))
+        relative_humidity_Avg = sum(relative_humidity_list)/len(relative_humidity_list)
+        return  Absolute_Humidity_g_kg(AMBIENT_TEMPERATURE,relative_humidity_Avg)
 
 
 
-AIR_INGRESS_FILTER= 0
-AIR_INGRESS_MILL  = 0
-# Constants  
-COMBUSTION_AIR_FAN_HEAT_RELEASE = 0 # Constant for tornto plant
-FUEL_PROPERTIES_GAS_CALORIFIC_VALUE_HHV = 9542
-FUEL_PROPERTIES_DENSITY = 0.78
-FUEL_PROPERTIES_COMBUSTION_WATER = 1.61          
-SITE_ELEVATION = 100
-MOISTURE= 0
-AII = 0.0
-SYSTEM_FAN_HEAT_RELEASE = 10
-WALL_LOSSES_FROM_CP_OUTLET_TO_FILTER_OUTLET_TEMPERATURE = 50
-WALL_LOSSES_FROM_CP_OUTLET_TO_FILTER_OUTLET_WALL_SURFACE =100
-WALL_LOSSES_FROM_BURNER_TO_CP_OUTLET_TEMPERATURE = 80
-WALL_LOSSES_FROM_BURNER_TO_CP_OUTLET_WALL_SURFACE =50
-AIII_BACK_CONVERSTION_CONVERSION_RATIO = 80
-COMBUSTION_TEMPERATURE = 24
 
 
-COMBUSTION_AIR_TEMPERATURE = tag_query_history(combustion_air_temperature_path)
-COMBUSTION_AIR_VOLUMETRIC_FLOW = 5
-RECIRCULATION_AIR_VOLUMETRIC_FLOW = Re_circulation_volumeric_flow ()
-CALCINATION_TEMPERATURE= tag_query_history(calcination_temeprature_path)
-STUCCO_FLOW = 31.00
-#Weather Inputs
-AMBIENT_TEMPERATURE = tag_query_history(temperature_path)
-AMBIENT_HUMIDITY =  Absolute_Humidity_g_kg()
-#IN4.0RM
-GYPSUM_PURITY= 85.0
-GYPSUM_MOISTURE= 0.53 #3
-HH= (tag_query_history(hh_tag_path)/6.2)*100
-AIII = 7.8
 
-def air_ingress(humidity):
-     
+	#----------------------------------------------------
+    COMBUSTION_AIR_TEMPERATURE = tag_query_history(combustion_air_temperature_path)
+    COMBUSTION_AIR_VOLUMETRIC_FLOW = 5
+    RECIRCULATION_AIR_VOLUMETRIC_FLOW = Re_circulation_volumeric_flow ()
+    CALCINATION_TEMPERATURE= tag_query_history(calcination_temeprature_path)
+    STUCCO_FLOW = 25.00
+    #Weather Inputs
+    AMBIENT_TEMPERATURE = tag_query_history(temperature_path)
+    AMBIENT_HUMIDITY =  Absolute_Humidity_g_kg()
+    #IN4.0RM
+    GYPSUM_PURITY= 85.0
+    GYPSUM_MOISTURE= 0.53 #3
+    HH= (tag_query_history(hh_tag_path)/6.2)*100
+    AIII = 7.8
+    #-------------------------------------------------------------
+
+	
+
+	
+
     #-----------------------------------------------------
     RE_CIRCULATION_HUMIDITY_PLC = humidity
     FLOW_AFTER_FILTER_TEMPERATURE_PLC = tag_query_history(flow_after_filter_temp)
@@ -168,16 +185,12 @@ def air_ingress(humidity):
 
     ABSOLUTE_PRESSURE = absolute_pressure(SITE_ELEVATION)
 
-    model_convergence_initialised = False
-
-
-    AIR_INGRESS_FILTER= 0
-    AIR_INGRESS_MILL  = 0
 
 
 
 
 
+    system.tag.writeAsync(humidity_calculation_percentage, 30)
     def model_convergance():
 
         global flow_after_filter_temperature  #Declare variable to global os that we ca use it all th funtions
@@ -366,63 +379,59 @@ def air_ingress(humidity):
                 global model_convergence_initialised
                 model_convergence_initialised = True
                 #print(GAS_FLOW,HUMIDITY,model_convergence_initialised)
+                break    
+    system.tag.writeAsync(humidity_calculation_percentage, 40)
+    model_convergance()
+    while(round (HUMIDITY,2)!=round (RE_CIRCULATION_HUMIDITY_PLC,2)): # Total air ingress to the system is calculated
+        AIR_INGRESS_MILL = AIR_INGRESS_MILL + 0.01
+        model_convergance()
+        if (round (HUMIDITY) == round (RE_CIRCULATION_HUMIDITY_PLC)):
+            AIR_INGRESS_MILL = round(AIR_INGRESS_MILL,2)
+            #print ('Total Air Ingress to system',AIR_INGRESS_MILL)
+            system.tag.writeAsync(humidity_calculation_percentage, 60)
+            break
+    
+    flow_after_filter_temperature =  round(flow_after_filter_temperature,2)
+    max_flow_after_filter_temperature = round(flow_after_filter_temperature,2)
+    FLOW_AFTER_FILTER_TEMPERATURE_PLC =  round(FLOW_AFTER_FILTER_TEMPERATURE_PLC,2)
+    AIR_INGRESS_FILTER = AIR_INGRESS_MILL
+    AIR_INGRESS_MILL = 0.00
+    system.tag.writeAsync(humidity_calculation_percentage, 70)
+    model_convergance()
+
+    min_flow_after_filter_temperature =  round(flow_after_filter_temperature,2)
+    
+    #print 'Flow after filter Temp - Without ingress-',max_flow_after_filter_temperature
+    #print 'Flow after filter Temp Plc value-',FLOW_AFTER_FILTER_TEMPERATURE_PLC	
+    #print 'Flow after filter Temp - With total ingress-',min_flow_after_filter_temperature    
+    if (max_flow_after_filter_temperature>=FLOW_AFTER_FILTER_TEMPERATURE_PLC and min_flow_after_filter_temperature <= FLOW_AFTER_FILTER_TEMPERATURE_PLC  ): # Condition for filter ingress detected
+        
+        #print 'tt'
+        AIR_INGRESS_MILL = AIR_INGRESS_FILTER   
+        AIR_INGRESS_FILTER = 0.0
+        model_convergance()
+        while (round(FLOW_AFTER_FILTER_TEMPERATURE_PLC) != round(flow_after_filter_temperature)):
+            AIR_INGRESS_FILTER = round(AIR_INGRESS_FILTER,3) 
+            AIR_INGRESS_MILL = round(AIR_INGRESS_MILL,3) 
+            AIR_INGRESS_MILL= AIR_INGRESS_MILL - 0.001
+            AIR_INGRESS_FILTER = AIR_INGRESS_FILTER + 0.001
+            system.tag.writeAsync(humidity_calculation_percentage, 80)
+            model_convergance()
+            #print "ggg"
+            if(AIR_INGRESS_FILTER >=0 and AIR_INGRESS_MILL>=0  and round(FLOW_AFTER_FILTER_TEMPERATURE_PLC) == round(flow_after_filter_temperature)):
+                #print ('AIR_INGRESS_MILL',AIR_INGRESS_MILL)
+                #print ('AIR_INGRESS_FILTER',AIR_INGRESS_FILTER)
+                #print (round(FLOW_AFTER_FILTER_TEMPERATURE_PLC))
+                #print (round(flow_after_filter_temperature))
+                system.tag.writeAsync(humidity_calculation_percentage, 90)
                 break
-            
-
-            
-
-
-        global AIR_INGRESS_FILTER
-        global AIR_INGRESS_MILL
-        global flow_after_filter_temperature
-        global FLOW_AFTER_FILTER_TEMPERATURE_PLC
-        
-        
-        if(model_convergence_initialised == False):
-            model_convergance()
-        
-        if (model_convergence_initialised == True):
-        
-            while(round (HUMIDITY,2)!=round (RE_CIRCULATION_HUMIDITY_PLC,2)): # Total air ingress to the system is calculated
-                AIR_INGRESS_MILL = AIR_INGRESS_MILL + 0.01
-                model_convergance()
-                if (round (HUMIDITY) == round (RE_CIRCULATION_HUMIDITY_PLC)):
-                    AIR_INGRESS_MILL = round(AIR_INGRESS_MILL,2)
-                    print ('Total Air Ingress to system',AIR_INGRESS_MILL)
-                    break
-            
-            flow_after_filter_temperature =  round(flow_after_filter_temperature,2)
-            max_flow_after_filter_temperature = round(flow_after_filter_temperature,2)
-            FLOW_AFTER_FILTER_TEMPERATURE_PLC =  round(FLOW_AFTER_FILTER_TEMPERATURE_PLC,2)
-            AIR_INGRESS_FILTER = AIR_INGRESS_MILL
-            AIR_INGRESS_MILL = 0.00
-            model_convergance()
-
-            min_flow_after_filter_temperature =  round(flow_after_filter_temperature,2)
-            
-            print 'Flow after filter Temp - Without ingress-',max_flow_after_filter_temperature
-            print 'Flow after filter Temp Plc value-',FLOW_AFTER_FILTER_TEMPERATURE_PLC	
-            print 'Flow after filter Temp - With total ingress-',min_flow_after_filter_temperature    
-            if (max_flow_after_filter_temperature>=FLOW_AFTER_FILTER_TEMPERATURE_PLC and min_flow_after_filter_temperature <= FLOW_AFTER_FILTER_TEMPERATURE_PLC  ): # Condition for filter ingress detected
-                
-                #print 'tt'
-                AIR_INGRESS_MILL = AIR_INGRESS_FILTER   
-                AIR_INGRESS_FILTER = 0.0
-                model_convergance()
-                while (round(FLOW_AFTER_FILTER_TEMPERATURE_PLC) != round(flow_after_filter_temperature)):
-                    AIR_INGRESS_FILTER = round(AIR_INGRESS_FILTER,3) 
-                    AIR_INGRESS_MILL = round(AIR_INGRESS_MILL,3) 
-                    AIR_INGRESS_MILL= AIR_INGRESS_MILL - 0.001
-                    AIR_INGRESS_FILTER = AIR_INGRESS_FILTER + 0.001
-                    model_convergance()
-                    #print "ggg"
-                    if(AIR_INGRESS_FILTER >=0 and AIR_INGRESS_MILL>=0  and round(FLOW_AFTER_FILTER_TEMPERATURE_PLC) == round(flow_after_filter_temperature)):
-                        #print ('AIR_INGRESS_MILL',AIR_INGRESS_MILL)
-                        #print ('AIR_INGRESS_FILTER',AIR_INGRESS_FILTER)
-                        #print (round(FLOW_AFTER_FILTER_TEMPERATURE_PLC))
-                        #print (round(flow_after_filter_temperature))
-                        break
-            return AIR_INGRESS_MILL,round(AIR_INGRESS_FILTER,2)
+    header = ['Parameter','Avg_value']
+    dataset = []
+    dataset.append(['AIR_INGRESS_FILTER',AIR_INGRESS_FILTER])
+    dataset.append(['AIR_INGRESS_MILL',AIR_INGRESS_MILL])
+    airingress_avg = system.dataset.toDataSet(header, dataset)
+    system.tag.writeAsync(humidity_calculation_percentage, 100)
+    return airingress_avg
             
 	        
-air_ingress()            
+            

@@ -97,7 +97,6 @@ RECIRCULATION_AIR_VOLUMETRIC_FLOW = 9.5
 WALL_LOSSES_FROM_BURNER_TO_CP_OUTLET_TEMPERATURE = 80
 WALL_LOSSES_FROM_BURNER_TO_CP_OUTLET_WALL_SURFACE =50
 
-
 #-----------------------------------------------------
 RE_CIRCULATION_HUMIDITY_PLC = 300.00
 FLOW_AFTER_FILTER_TEMPERATURE_PLC = 149.582
@@ -305,17 +304,17 @@ def model_convergance():
         
 
 if(model_convergence_initialised == False):
-	model_convergance()
-     
+    model_convergance()
+    
 if (model_convergence_initialised == True):
 
     while(round (HUMIDITY)!=round (RE_CIRCULATION_HUMIDITY_PLC)): # Total air ingress to the system is calculated
         AIR_INGRESS_MILL = AIR_INGRESS_MILL + 0.01
         model_convergance()
         if (round (HUMIDITY) == round (RE_CIRCULATION_HUMIDITY_PLC)):
-           AIR_INGRESS_MILL = round(AIR_INGRESS_MILL,2)
-           print (AIR_INGRESS_MILL)
-           break
+            AIR_INGRESS_MILL = round(AIR_INGRESS_MILL,2)
+            print (AIR_INGRESS_MILL)
+            break
     
     flow_after_filter_temperature =  round(flow_after_filter_temperature,2)
     max_flow_after_filter_temperature = round(flow_after_filter_temperature,2)
@@ -325,7 +324,7 @@ if (model_convergence_initialised == True):
     model_convergance()
     min_flow_after_filter_temperature =  round(flow_after_filter_temperature,2)
     if (max_flow_after_filter_temperature>=FLOW_AFTER_FILTER_TEMPERATURE_PLC and min_flow_after_filter_temperature <= FLOW_AFTER_FILTER_TEMPERATURE_PLC  ): # Condition for filter ingress detected
-        AIR_INGRESS_MILL = AIR_INGRESS_FILTER
+        AIR_INGRESS_MILL = AIR_INGRESS_FILTER   
         AIR_INGRESS_FILTER = 0.0
         model_convergance()
         while (round(FLOW_AFTER_FILTER_TEMPERATURE_PLC) != round(flow_after_filter_temperature)):
@@ -341,8 +340,5 @@ if (model_convergence_initialised == True):
                 print (round(flow_after_filter_temperature))
 
     
-    
-    
-    
-       
         
+            
