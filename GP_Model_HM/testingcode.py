@@ -122,7 +122,11 @@ def air_ingress(humidity,StartTime,EndTime):
     def absolute_pressure(alt):
             return ((1 - 0.000125 * alt + 0.0000000075 * (alt** 2))) *  101325 /100
 
-	     
+    def in4rm_tag_history(tagpath):
+        dataset = system.tag.queryTagHistory(paths=[tagpath], startDate=starttime,endDate=endtime,returnSize=1,aggregationMode="LastValue")
+        datasetlist = dataset.getColumnAsList(1)
+        return sum(datasetlist)/len(datasetlist)
+
     def tag_query_history(tagpath):	
         dataset = system.tag.queryTagHistory(paths=[tagpath], startDate=starttime,endDate=endtime,returnSize=1,aggregationMode="Average")
         datasetlist = dataset.getColumnAsList(1)

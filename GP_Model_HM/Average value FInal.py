@@ -4,7 +4,9 @@ from  __future__ import division
 #starttime = system.date.addMinutes(endtime, -2000)
 #-------------------------------------------------------------------------------------------------------------------------------------------------------------
 Code_completion_tag = '[default]Toronto/HeatMassModule/loading' #Save the percentage of code execution into a tag
+combustion_duct_air_pressure = '[MQTT Engine]Edge Nodes/Toronto/SPA/Calcination/Pfeiffer Mill/Mill/Combustion Duct/Air_Pressure_PV' # Find Conbustion ir flow
 #universal declaration of tag path
+material_flow_tag = '[MQTT Engine]Edge Nodes/Toronto/SPA/Calcination/Rock n Reclaim/Mill/Mill/Material_Flow_PV'
 Airflowtagpath = '[MQTT Engine]Edge Nodes/Toronto/SPA/Calcination/Pfeiffer Mill/Mill/System Fan/Air_Flow_PV'
 Re_circulation_percentage_tagpath = '[MQTT Engine]Edge Nodes/Toronto/SPA/Calcination/Pfeiffer Mill/Mill/System Fan/Exhaust Damper_Position_PV'
 combustion_air_temperature_path='[MQTT Engine]Edge Nodes/Toronto/SPA/Calcination/Pfeiffer Mill/Mill/Combustion Fan/Inlet_Temperature_PV'
@@ -23,7 +25,7 @@ electrical_comspution_tag_path ='[MQTT Engine]Edge Nodes/Toronto/Energy/Electric
 flow_after_filter_temp = '[MQTT Engine]Edge Nodes/Toronto/SPA/Calcination/Dust Collection/Dust Collection/Dust Collector/Outlet_Temperature_PV' # Flow after filter temperature
 
 #-----------------------------------------------------------------------------------------------------------------------------------------------------------------
-#yet to find
+#Consider Air ingress zero
 AIR_INGRESS_FILTER= 0
 AIR_INGRESS_MILL  = 0
 # Constants  
@@ -31,7 +33,7 @@ COMBUSTION_AIR_FAN_HEAT_RELEASE = 0 # Constant for tornto plant
 FUEL_PROPERTIES_GAS_CALORIFIC_VALUE_HHV = 9542
 FUEL_PROPERTIES_DENSITY = 0.78
 FUEL_PROPERTIES_COMBUSTION_WATER = 1.61          
-SITE_ELEVATION = 81
+SITE_ELEVATION = 100
 MOISTURE= 0
 AII = 0.0
 SYSTEM_FAN_HEAT_RELEASE = 10
@@ -41,6 +43,9 @@ WALL_LOSSES_FROM_BURNER_TO_CP_OUTLET_TEMPERATURE = 80
 WALL_LOSSES_FROM_BURNER_TO_CP_OUTLET_WALL_SURFACE =50
 AIII_BACK_CONVERSTION_CONVERSION_RATIO = 80
 COMBUSTION_TEMPERATURE = 24
+
+flow_after_filter_temperature = 0
+
 
 #---------------------------------------------------------------------------------------------------------------------
 #Airflowtagpath =string, Air flow String tag path
@@ -53,14 +58,25 @@ def wrap_all_to_dataset(StartTime,EndTime):
     starttime  = StartTime
     global endtime  
     endtime= EndTime
-    system.tag.writeAsync(Code_completion_tag, 10)	
+    system.tag.writeAsync(Code_completion_tag, 10)
+    global flow_after_filter_temperature
+    global AIR_INGRESS_FILTER
+    global AIR_INGRESS_MILL
+    global combustion_air_dry_flow
+
+    
 
 
-    def tag_query_history(tagpath):	
+
+    def tag_query_history(tagpath): #enqures the Average value
         dataset = system.tag.queryTagHistory(paths=[tagpath], startDate=starttime,endDate=endtime,returnSize=1,aggregationMode="Average")
         datasetlist = dataset.getColumnAsList(1)
         return sum(datasetlist)/len(datasetlist)
-
+   
+    def in4rm_tag_history(tagpath): # Enquires The last value 
+        dataset = system.tag.queryTagHistory(paths=[tagpath], startDate=starttime,endDate=endtime,returnSize=1,aggregationMode="LastValue")
+        datasetlist = dataset.getColumnAsList(1)
+        return sum(datasetlist)/len(datasetlist)
 
 
     def Absolute_Humidity_g_kg():
@@ -180,6 +196,15 @@ def wrap_all_to_dataset(StartTime,EndTime):
 
     def wet_gypsum_flow():
         return StuccoToGypsum(0.01*HH,0.01*AIII,0.01*AII)*(1-0.01*MOISTURE)*STUCCO_FLOW/(1-0.01*GYPSUM_MOISTURE)
+    
+    def combustion_volumetric_flow():
+        Air_Velocity_ft_min = 1096.2 * (0.84) * (((tag_query_history(combustion_duct_air_pressure)/2.488)/0.075)**(1/2)) # Air Velocity in ft/min
+        Air_Velocity_m3_sec = Air_Velocity_ft_min *  0.00508
+        volumetric_flow = Air_Velocity_m3_sec * 0.40
+        return volumetric_flow
+
+
+
 
     def power_sources_total():
 
@@ -196,18 +221,21 @@ def wrap_all_to_dataset(StartTime,EndTime):
     #Inputs from Tag
 
     COMBUSTION_AIR_TEMPERATURE = tag_query_history(combustion_air_temperature_path)
-    COMBUSTION_AIR_VOLUMETRIC_FLOW = 5
+    COMBUSTION_AIR_VOLUMETRIC_FLOW = combustion_volumetric_flow()
     RECIRCULATION_AIR_VOLUMETRIC_FLOW = Re_circulation_volumeric_flow ()
     CALCINATION_TEMPERATURE= tag_query_history(calcination_temeprature_path)
-    STUCCO_FLOW = 20.00  #This Value has Direct Impact on humidity
+    #STUCCO_FLOW = 31.00  #This Value has Direct Impact on humidity
     #Weather Inputs
     AMBIENT_TEMPERATURE = tag_query_history(temperature_path)
     AMBIENT_HUMIDITY =  Absolute_Humidity_g_kg()
     #IN4.0RM
-    GYPSUM_PURITY= 85.0
-    GYPSUM_MOISTURE= 0.53 #3
-    HH= (tag_query_history(hh_tag_path)/6.2)*100
-    AIII = 7.8
+    GYPSUM_PURITY= 91
+    GYPSUM_MOISTURE= 0.07 #3
+    HH= (in4rm_tag_history(hh_tag_path)/6.2)*100
+    AIII = (GYPSUM_PURITY - HH)*(136/172)
+    stucco_flow_tag = tag_query_history(material_flow_tag)
+    STUCCO_FLOW = ((stucco_flow_tag-(stucco_flow_tag*(GYPSUM_MOISTURE/100)))*(GYPSUM_PURITY/100))*(145/172)
+
     #---------------------------------------------------------------------------------------------------------------------
     system.tag.writeAsync(Code_completion_tag, 30)   # Assumes th ecode as completed 10 % of the execution
     #--------------------------------------------------------------------------------------------------------------------------
@@ -269,11 +297,15 @@ def wrap_all_to_dataset(StartTime,EndTime):
 
 
 
-
-
+    #------------------------------------------------
+    FLOW_AFTER_FILTER_TEMPERATURE_PLC = tag_query_history(flow_after_filter_temp)
+    #------------------------------------------------
+	
     
     def Model_convergence():
 
+        global flow_after_filter_temperature
+        global combustion_air_dry_flow
         Steps_model_convergence_running = 0 #Calculate the numebr of times Funtion runns
 
         ABSOLUTE_PRESSURE = absolute_pressure(SITE_ELEVATION) #Absolut epressure comes from Site Elevation
@@ -478,6 +510,8 @@ def wrap_all_to_dataset(StartTime,EndTime):
                 return (result_list)
                 break
     
+
+
     header = ['Parameter','Avg_value']
     dataset = []
 
@@ -515,20 +549,8 @@ def wrap_all_to_dataset(StartTime,EndTime):
     excess_air_percentage_avg = exces_air_percentatge()
     dataset.append(['excess_air_percentage_avg',excess_air_percentage_avg])
 
-    thermal_efficiency_combustion_cost_avg = Thermal_efficiency_combustion_cost()
-    dataset.append(['thermal_efficiency_combustion_cost_avg',thermal_efficiency_combustion_cost_avg])
-
-    thermal_efficiency_sources_cost_avg = Thermal_efficiency_sources_cost()
-    dataset.append(['thermal_efficiency_sources_cost_avg',thermal_efficiency_sources_cost_avg])
-
     wet_gypsum_flow_avg = wet_gypsum_flow()
     dataset.append(['wet_gypsum_flow_avg',wet_gypsum_flow_avg])
-
-    power_sorces_total_avg =power_sources_total()
-    dataset.append(['power_sorces_total_avg',power_sorces_total_avg])
-
-    power_sources_total_HHV_KWH_T_avg = power_sources_total_HHV_KWH_T()
-    dataset.append(['power_sources_total_HHV_KWH_T_avg',power_sources_total_HHV_KWH_T_avg])
 
     combustion_kwh_t_avg = tag_query_history(combustion_kwh_t_tag_path)
     dataset.append(['combustion_kwh_t_avg',combustion_kwh_t_avg])
@@ -536,17 +558,22 @@ def wrap_all_to_dataset(StartTime,EndTime):
     electrical_comspution_kwh_t_avg = tag_query_history(electrical_comspution_tag_path)
     dataset.append(['electrical_comspution_kwh_t_avg',electrical_comspution_kwh_t_avg])
     
-    Calculated_gas_flow = get_gas_flow()
-    dataset.append(['Calculated_gas_flow',Calculated_gas_flow])
+    stucco_flow_average_plc = STUCCO_FLOW
+    dataset.append(['stucco_flow_average_plc',stucco_flow_average_plc])
+    
+    dataset.append(['combustion_air_dry_flow',combustion_air_dry_flow])
+    
+    dataset.append(['COMBUSTION AIR TEMPERATURE',COMBUSTION_AIR_TEMPERATURE])
+    
+    dataset.append(['AIII',AIII])
+    dataset.append(['recirculation_humidity_avg_plc',tag_query_history(recirculation_Humidity_tag_path)])
+    #recirculation_humidity_avg =tag_query_history(recirculation_Humidity_tag_path)
+    
+    
 
-    Calculated_re_humidity = get_re_humidity()
-    dataset.append(['Calculated_re_humidity',Calculated_re_humidity])
     
-    calculated_flowafterfilter_temp = get_flow_after_filter_temp()
-    dataset.append(['calculated_flowafterfilter_temp',calculated_flowafterfilter_temp])
+
     
-    flow_after_filter_temp_plc = tag_query_history(flow_after_filter_temp)
-    dataset.append(['flow_after_filter_temp_plc',flow_after_filter_temp_plc])
     	
     Data_2_UI = system.dataset.toDataSet(header, dataset)
 
