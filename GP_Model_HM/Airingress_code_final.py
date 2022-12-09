@@ -10,6 +10,7 @@ MWwater = lambda : 18.0153
 
 #----------------------------------------------------------------------------------------------------------------------
 #universal declaration of tag path
+wet_gypsum_into_feed = '[MQTT Engine]Edge Nodes/Toronto/SPA/Calcination/Rock n Reclaim/Mill/Mill/Material_Flow_PV'
 combustion_duct_air_pressure = '[MQTT Engine]Edge Nodes/Toronto/SPA/Calcination/Pfeiffer Mill/Mill/Combustion Duct/Air_Pressure_PV' # Find Conbustion ir flow
 humidity_calculation_percentage = '[default]Toronto/HeatMassModule/humidity_calculation'
 material_flow_tag = '[MQTT Engine]Edge Nodes/Toronto/SPA/Calcination/Rock n Reclaim/Mill/Mill/Material_Flow_PV'
@@ -89,7 +90,8 @@ def air_ingress(humidity,StartTime,EndTime):
     AIII_BACK_CONVERSTION_CONVERSION_RATIO = 80
     COMBUSTION_TEMPERATURE = 24
 
-      
+    # gYPSUM"""
+    
 
     def DISSOCIATION_water(): #DEFINED COMPLEATLY #I34
             return OUTPUT_MATERIAL_dry_flow()*(0.01*HH/MWhemihydrate()*1.5 + 0.01*(AIII+AII)/MWanhydrite()*2 + AIII_BACK_CONVERSTION_CONVERSION_RATIO/(1-AIII_BACK_CONVERSTION_CONVERSION_RATIO)*0.01*AIII/MWanhydrite()*0.5)*MWwater()
@@ -104,10 +106,11 @@ def air_ingress(humidity,StartTime,EndTime):
             return 0.01*MOISTURE*STUCCO_FLOW*1000/3600
     
     def GYPSUM_wet_gypsum_flow(): #DEFINED COMPLEATLY - gypsum_wet_gypsum_flow
-            return StuccoToGypsum(0.01*HH,0.01*AIII,0.01*AII)*(1-0.01*MOISTURE)*STUCCO_FLOW/(1-0.01*GYPSUM_MOISTURE)
+            #return StuccoToGypsum(0.01*HH,0.01*AIII,0.01*AII)*(1-0.01*MOISTURE)*STUCCO_FLOW/(1-0.01*GYPSUM_MOISTURE)
+            return tag_query_history(wet_gypsum_into_feed)
     
     def INPUT_MATERIAL_liquid_water_flow(): #DEFINED COMPLEATLY - F32
-        return GYPSUM_wet_gypsum_flow()*(0.01*GYPSUM_MOISTURE)*1000/3600
+        return gypsum_wet_gypsum_flow *(0.01*GYPSUM_MOISTURE)*1000/3600
     def InvSHMixture(Etot, Mflow, Wh, MG, MP, MA, MI, MW):
         A = (0.0006 / 28.96 + Wh * 0.0000029 / 18.02) * Mflow + 0.076 / 2 / MWgypsum() * MG + 0.061 / 2 / MWhemihydrate() * MP + 0.033 / 2 / MWanhydrite() * MA + 0.076 / 2 / MWimpurities() * MI
         B = (6.8 / 28.96 + Wh * 0.0081 / 18.02) * Mflow + (21.84 + 0.076 * 273.15) / MWgypsum() * MG + (11.48 + 0.061 * 273.15) / MWhemihydrate() * MP + (14.01 + 0.033 * 273.15) / MWanhydrite() * MA + (21.84 + 0.076 * 273.15) / MWimpurities() * MI + MWwater() / MWwater() * MW
@@ -200,7 +203,7 @@ def air_ingress(humidity,StartTime,EndTime):
     STUCCO_FLOW = ((stucco_flow_tag-(stucco_flow_tag*(GYPSUM_MOISTURE/100)))*(GYPSUM_PURITY/100))*(145/172)
     
     #-------------------------------------------------------------
-
+    gypsum_wet_gypsum_flow = tag_query_history(wet_gypsum_into_feed) #GYPSUM_wet_gypsum_flow() #wet ggypsum to inlet mill by tag
 	
 
 	
@@ -295,7 +298,7 @@ def air_ingress(humidity,StartTime,EndTime):
 
 
             # gYPSUM"""
-            gypsum_wet_gypsum_flow = GYPSUM_wet_gypsum_flow()
+            #gypsum_wet_gypsum_flow = tag_query_history(wet_gypsum_into_feed) #GYPSUM_wet_gypsum_flow()
 
             # Input material """
             input_material_dry_flow =  gypsum_wet_gypsum_flow*(1 - 0.01*GYPSUM_MOISTURE)*1000/3600

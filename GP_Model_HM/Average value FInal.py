@@ -3,6 +3,8 @@ from  __future__ import division
 #endtime = system.date.now()
 #starttime = system.date.addMinutes(endtime, -2000)
 #-------------------------------------------------------------------------------------------------------------------------------------------------------------
+wet_gypsum_into_feed = '[MQTT Engine]Edge Nodes/Toronto/SPA/Calcination/Rock n Reclaim/Mill/Mill/Material_Flow_PV'
+mill_delta_pressure = '[MQTT Engine]Edge Nodes/Toronto/SPA/Calcination/Pfeiffer Mill/Mill/Mill/Inlet_Pressure_PV' #pressure delta bw mill
 Code_completion_tag = '[default]Toronto/HeatMassModule/loading' #Save the percentage of code execution into a tag
 combustion_duct_air_pressure = '[MQTT Engine]Edge Nodes/Toronto/SPA/Calcination/Pfeiffer Mill/Mill/Combustion Duct/Air_Pressure_PV' # Find Conbustion ir flow
 #universal declaration of tag path
@@ -264,7 +266,9 @@ def wrap_all_to_dataset(StartTime,EndTime):
 
     def MVOL(Temperature,Humidity,Static_Pressure):
             return  ((1 + Humidity / 1000.00) * (273.15 / (273.15 + Temperature)) * (10329 + Static_Pressure) / 10329.00) / (0.7735 + Humidity* 1.2436 / 1000.00 )
-
+            
+	#def GYPSUM_wet_gypsum_flow():
+		#return  tag_query_history(wet_gypsum_into_feed)
 
     def TEM(Dh, Wh):   # R5
         A = 0.0000006 / 28.96 + (Wh / 1000.0) * 0.0000029 / 18.02
@@ -314,7 +318,7 @@ def wrap_all_to_dataset(StartTime,EndTime):
         OUTPUT_MATERIAL_dry_flow = lambda :(1-0.01*MOISTURE)*STUCCO_FLOW*1000/3600
         DRYING_water = lambda : INPUT_MATERIAL_liquid_water_flow() - OUTPUT_MATERIAL_liquid_water_flow()
         OUTPUT_MATERIAL_liquid_water_flow =lambda : 0.01*MOISTURE*STUCCO_FLOW*1000/3600
-        GYPSUM_wet_gypsum_flow = lambda :  StuccoToGypsum(0.01*HH,0.01*AIII,0.01*AII)*(1-0.01*MOISTURE)*STUCCO_FLOW/(1-0.01*GYPSUM_MOISTURE)
+        GYPSUM_wet_gypsum_flow = lambda :  StuccoToGypsum(0.01*HH,0.01*AIII,0.01*AII)*(1-0.01*MOISTURE)*STUCCO_FLOW/(1-0.01*GYPSUM_MOISTURE) 
         INPUT_MATERIAL_liquid_water_flow = lambda :GYPSUM_wet_gypsum_flow()*(0.01*GYPSUM_MOISTURE)*1000/3600
 
         HUMIDITY = 0
@@ -549,8 +553,8 @@ def wrap_all_to_dataset(StartTime,EndTime):
     excess_air_percentage_avg = exces_air_percentatge()
     dataset.append(['excess_air_percentage_avg',excess_air_percentage_avg])
 
-    wet_gypsum_flow_avg = wet_gypsum_flow()
-    dataset.append(['wet_gypsum_flow_avg',wet_gypsum_flow_avg])
+    wet_gypsum_flow_avg = tag_query_history(wet_gypsum_into_feed)
+    dataset.append(['wet_gypsum_flow_avg',wet_gypsum_flow_avg])#wet_gypsum_flow()
 
     combustion_kwh_t_avg = tag_query_history(combustion_kwh_t_tag_path)
     dataset.append(['combustion_kwh_t_avg',combustion_kwh_t_avg])
@@ -567,8 +571,9 @@ def wrap_all_to_dataset(StartTime,EndTime):
     
     dataset.append(['AIII',AIII])
     dataset.append(['recirculation_humidity_avg_plc',tag_query_history(recirculation_Humidity_tag_path)])
-    #recirculation_humidity_avg =tag_query_history(recirculation_Humidity_tag_path)
     
+    mill_delta_pressure_avg = tag_query_history(mill_delta_pressure)
+    dataset.append(['mill_delta_pressure_avg',mill_delta_pressure_avg])
     
 
     
