@@ -6,6 +6,7 @@ from  __future__ import division
 wet_gypsum_into_feed = '[MQTT Engine]Edge Nodes/Toronto/SPA/Calcination/Rock n Reclaim/Mill/Mill/Material_Flow_PV'
 mill_delta_pressure = '[MQTT Engine]Edge Nodes/Toronto/SPA/Calcination/Pfeiffer Mill/Mill/Mill/Inlet_Pressure_PV' #pressure delta bw mill
 Code_completion_tag = '[default]Toronto/HeatMassModule/loading' #Save the percentage of code execution into a tag
+Progress_completion_tag = '[client]Progress' #Save the percentage of code execution into a tag
 combustion_duct_air_pressure = '[MQTT Engine]Edge Nodes/Toronto/SPA/Calcination/Pfeiffer Mill/Mill/Combustion Duct/Air_Pressure_PV' # Find Conbustion ir flow
 #universal declaration of tag path
 material_flow_tag = '[MQTT Engine]Edge Nodes/Toronto/SPA/Calcination/Rock n Reclaim/Mill/Mill/Material_Flow_PV'
@@ -38,6 +39,7 @@ FUEL_PROPERTIES_COMBUSTION_WATER = 1.61
 SITE_ELEVATION = 100
 MOISTURE= 0
 AII = 0.0
+#AII = tag_query_history(tagpath)
 SYSTEM_FAN_HEAT_RELEASE = 10
 WALL_LOSSES_FROM_CP_OUTLET_TO_FILTER_OUTLET_TEMPERATURE = 50
 WALL_LOSSES_FROM_CP_OUTLET_TO_FILTER_OUTLET_WALL_SURFACE =100
@@ -61,6 +63,7 @@ def wrap_all_to_dataset(StartTime,EndTime):
     global endtime  
     endtime= EndTime
     system.tag.writeAsync(Code_completion_tag, 10)
+    system.tag.writeAsync(Progress_completion_tag, 10)
     global flow_after_filter_temperature
     global AIR_INGRESS_FILTER
     global AIR_INGRESS_MILL
@@ -91,8 +94,6 @@ def wrap_all_to_dataset(StartTime,EndTime):
             relative_humidity_list.append(relative_humidity_average_dataset.getValueAt(i,1))
         relative_humidity_Avg = sum(relative_humidity_list)/len(relative_humidity_list)
         return  Absolute_Humidity_g_kg(AMBIENT_TEMPERATURE,relative_humidity_Avg)
-
-    
 
 
     #---------------------------------------------------------------------------------------------------------------------
@@ -233,14 +234,15 @@ def wrap_all_to_dataset(StartTime,EndTime):
     #IN4.0RM
     GYPSUM_PURITY= 91
     GYPSUM_MOISTURE= 0.07 #3
-    HH= (in4rm_tag_history(hh_tag_path)/6.2)*100
+    HH= (in4rm_tag_history(hh_tag_path)/6.2)*100.00
     AIII = (GYPSUM_PURITY - HH)*(136/172)
     stucco_flow_tag = tag_query_history(material_flow_tag)
     STUCCO_FLOW = ((stucco_flow_tag-(stucco_flow_tag*(GYPSUM_MOISTURE/100)))*(GYPSUM_PURITY/100))*(145/172)
-
-    #---------------------------------------------------------------------------------------------------------------------
+     
+    #--------------------------------------------------------------------------------------------------------------------
     system.tag.writeAsync(Code_completion_tag, 30)   # Assumes th ecode as completed 10 % of the execution
-    #--------------------------------------------------------------------------------------------------------------------------
+    system.tag.writeAsync(Progress_completion_tag, 30)
+    #--------------------------------------------------------------------------------------------------------------------
 
 
 
@@ -297,14 +299,6 @@ def wrap_all_to_dataset(StartTime,EndTime):
     SHImpurities = lambda T : 21.84 * T + 0.076 * (T ** 2 / 2 + 273.15 * T)
     SHW = lambda T : MWwater() * T
 
-
-
-
-
-    #------------------------------------------------
-    FLOW_AFTER_FILTER_TEMPERATURE_PLC = tag_query_history(flow_after_filter_temp)
-    #------------------------------------------------
-	
     
     def Model_convergence():
 
@@ -510,7 +504,8 @@ def wrap_all_to_dataset(StartTime,EndTime):
                 result_list.append(flow_after_filter_temperature)
 
                 
-                system.tag.writeAsync(Code_completion_tag, 80)   # Assumes th ecode as completed 10 % of the execution
+                system.tag.writeAsync(Code_completion_tag, 80)   # Assumes th ecode as completed 10 % of the execution 
+                system.tag.writeAsync(Progress_completion_tag, 80)
                 return (result_list)
                 break
     
@@ -575,13 +570,12 @@ def wrap_all_to_dataset(StartTime,EndTime):
     mill_delta_pressure_avg = tag_query_history(mill_delta_pressure)
     dataset.append(['mill_delta_pressure_avg',mill_delta_pressure_avg])
     
+    dataset.append(['FLOW_AFTER_FILTER_TEMPERATURE_PLC', tag_query_history(flow_after_filter_temp)]) 
 
-    
-
-    
     	
     Data_2_UI = system.dataset.toDataSet(header, dataset)
 
     system.tag.writeAsync(Code_completion_tag, 100)
+   
 
     return Data_2_UI
