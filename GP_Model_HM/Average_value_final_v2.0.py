@@ -227,12 +227,11 @@ def wrap_all_to_dataset(StartTime,EndTime):
     COMBUSTION_AIR_VOLUMETRIC_FLOW = combustion_volumetric_flow()
     RECIRCULATION_AIR_VOLUMETRIC_FLOW = Re_circulation_volumeric_flow ()
     CALCINATION_TEMPERATURE= tag_query_history(calcination_temeprature_path)
-    #STUCCO_FLOW = 31.00  #This Value has Direct Impact on humidity
     #Weather Inputs
     AMBIENT_TEMPERATURE = tag_query_history(temperature_path)
     AMBIENT_HUMIDITY =  Absolute_Humidity_g_kg()
     #IN4.0RM
-    GYPSUM_PURITY= 91
+    GYPSUM_PURITY= 91 #in4rm_tag_history(hh_tag_path)
     GYPSUM_MOISTURE= 0.07 #3
     HH= (in4rm_tag_history(hh_tag_path)/6.2)*100.00
     AIII = (GYPSUM_PURITY - HH)*(136/172)
@@ -502,6 +501,7 @@ def wrap_all_to_dataset(StartTime,EndTime):
                 result_list.append(combustion_combustion_power)
                 result_list.append(HUMIDITY)
                 result_list.append(flow_after_filter_temperature)
+                
 
                 
                 system.tag.writeAsync(Code_completion_tag, 80)   # Assumes th ecode as completed 10 % of the execution 
